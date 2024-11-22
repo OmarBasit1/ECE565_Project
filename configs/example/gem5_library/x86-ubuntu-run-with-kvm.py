@@ -87,7 +87,7 @@ memory = SingleChannelDDR3_1600(size="3GB")
 # cores for the command we wish to run after boot.
 processor = SimpleSwitchableProcessor(
     starting_core_type=CPUTypes.KVM,
-    switch_core_type=CPUTypes.TIMING,
+    switch_core_type=CPUTypes.O3,
     isa=ISA.X86,
     num_cores=2,
 )

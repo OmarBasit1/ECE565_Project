@@ -87,7 +87,7 @@ memory = SingleChannelDDR4_2400(size="3GiB")
 # a function to be called when an exit event happens).
 processor = SimpleSwitchableProcessor(
     starting_core_type=CPUTypes.KVM,
-    switch_core_type=CPUTypes.TIMING,
+    switch_core_type=CPUTypes.O3,
     isa=ISA.X86,
     num_cores=2,
 )

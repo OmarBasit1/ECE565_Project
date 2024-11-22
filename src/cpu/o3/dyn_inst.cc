@@ -57,6 +57,7 @@ DynInst::DynInst(const Arrays &arrays, const StaticInstPtr &static_inst,
         const StaticInstPtr &_macroop, InstSeqNum seq_num, CPU *_cpu)
     : seqNum(seq_num), staticInst(static_inst), cpu(_cpu),
       _numSrcs(arrays.numSrcs), _numDests(arrays.numDests),
+      _waitBit(arrays.waitBit),
       _flatDestIdx(arrays.flatDestIdx), _destIdx(arrays.destIdx),
       _prevDestIdx(arrays.prevDestIdx), _srcIdx(arrays.srcIdx),
       _readySrcIdx(arrays.readySrcIdx), macroop(_macroop)
@@ -164,8 +165,11 @@ DynInst::operator new(size_t count, Arrays &arrays)
     size_t ready_src_idx_size =
         sizeof(*arrays.readySrcIdx) * ((num_srcs + 7) / 8);
 
+    uintptr_t wait_bit_ptr =
+        roundUp(ready_src_idx + ready_src_idx_size, alignof(bool));
+
     // Figure out how much space we need in total.
-    size_t total_size = ready_src_idx + ready_src_idx_size;
+    size_t total_size = wait_bit_ptr + sizeof(bool);
 
     // Actually allocate it.
     uint8_t *buf = (uint8_t *)::operator new(total_size);
@@ -176,6 +180,8 @@ DynInst::operator new(size_t count, Arrays &arrays)
     arrays.prevDestIdx = (PhysRegIdPtr *)(buf + prev_dest_idx);
     arrays.srcIdx = (PhysRegIdPtr *)(buf + src_idx);
     arrays.readySrcIdx = (uint8_t *)(buf + ready_src_idx);
+    bool *wait_bit = (bool *)(buf + wait_bit_ptr);
+    arrays.waitBit = *wait_bit = false;
 
     // Initialize all the extra components.
     new (arrays.flatDestIdx) RegId[num_dests];

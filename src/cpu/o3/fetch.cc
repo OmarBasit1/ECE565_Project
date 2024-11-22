@@ -1027,6 +1027,7 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
     DynInst::Arrays arrays;
     arrays.numSrcs = staticInst->numSrcRegs();
     arrays.numDests = staticInst->numDestRegs();
+    arrays.waitBit = false;
 
     // Create a new DynInst from the instruction fetched.
     DynInstPtr instruction = new (arrays) DynInst(

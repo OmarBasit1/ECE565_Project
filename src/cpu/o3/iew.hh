@@ -354,6 +354,8 @@ class IEW
     /** Instruction queue. */
     InstructionQueue instQueue;
 
+    //TODO: add wib
+
     /** Load / store queue. */
     LSQ ldstQueue;
 
