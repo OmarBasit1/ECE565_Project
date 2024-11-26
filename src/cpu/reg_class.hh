@@ -417,17 +417,19 @@ class PhysRegId : private RegId
     RegIndex flatIdx;
     int numPinnedWritesToComplete;
     bool pinned;
+    bool waitBit;
 
   public:
     explicit PhysRegId() : RegId(invalidRegClass, -1), flatIdx(-1),
-                           numPinnedWritesToComplete(0)
+                           numPinnedWritesToComplete(0), waitBit(false)
     {}
 
     /** Scalar PhysRegId constructor. */
     explicit PhysRegId(const RegClass &reg_class, RegIndex _regIdx,
               RegIndex _flatIdx)
         : RegId(reg_class, _regIdx), flatIdx(_flatIdx),
-          numPinnedWritesToComplete(0), pinned(false)
+          numPinnedWritesToComplete(0), pinned(false),
+          waitBit(false)
     {}
 
     /** Visible RegId methods */
@@ -490,6 +492,7 @@ class PhysRegId : private RegId
     void incrNumPinnedWrites() { ++numPinnedWrites; }
 
     bool isPinned() const { return pinned; }
+    bool isWaitBit() const { return waitBit; }
 
     int
     getNumPinnedWritesToComplete() const
@@ -505,6 +508,12 @@ class PhysRegId : private RegId
 
     void decrNumPinnedWritesToComplete() { --numPinnedWritesToComplete; }
     void incrNumPinnedWritesToComplete() { ++numPinnedWritesToComplete; }
+
+    void 
+    setWaitBit(bool waitVal) 
+    {
+      waitBit = waitVal;
+    }
 };
 
 using PhysRegIdPtr = PhysRegId*;

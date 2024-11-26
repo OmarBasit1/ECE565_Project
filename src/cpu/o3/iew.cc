@@ -1360,6 +1360,15 @@ IEW::writebackInsts()
         // instruction.
         ppToCommit->notify(inst);
 
+        if (inst->isLoad()) 
+        {
+          if (inst->renamedDestIdx(0)->isWaitBit())
+          {
+            // std::cout << "WAIT LOAD RESOLVED" << std::endl;
+          }
+          inst->renamedDestIdx(0)->setWaitBit(false);
+        }
+
         // Some instructions will be sent to commit without having
         // executed because they need commit to handle them.
         // E.g. Strictly ordered loads have not actually executed when they

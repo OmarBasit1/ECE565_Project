@@ -1094,6 +1094,19 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
     resched_inst->translationStarted(false);
     resched_inst->translationCompleted(false);
 
+    // Tag a cache miss load with waitBits
+    if (resched_inst->isLoad())
+    {
+      int8_t total_dest_regs = resched_inst->numDestRegs();
+      for (int dest_reg_idx = 0;
+           dest_reg_idx < total_dest_regs;
+           dest_reg_idx++)
+      {
+        std::cout << "rescheduling load" << std::endl;
+        resched_inst->renamedDestIdx(dest_reg_idx)->setWaitBit(true);
+      }
+    }
+
     resched_inst->clearCanIssue();
     memDepUnit[resched_inst->threadNumber].reschedule(resched_inst);
 }
@@ -1336,6 +1349,7 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
     // Loop through the instruction's source registers, adding
     // them to the dependency list if they are not ready.
     int8_t total_src_regs = new_inst->numSrcRegs();
+    int8_t total_dest_regs = new_inst->numDestRegs();
     bool return_val = false;
 
     for (int src_reg_idx = 0;
@@ -1358,6 +1372,21 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
                         new_inst->pcState(), src_reg->index(),
                         src_reg->className());
 
+                // propogate the waitBit to dependent physical registers
+                if (src_reg->isWaitBit()) {
+                  for (int dest_reg_idx = 0;
+                       dest_reg_idx < total_dest_regs;
+                       dest_reg_idx++)
+                  {
+                    // std::cout << "DEP ISNTR" << std::endl;
+                    new_inst->renamedDestIdx(dest_reg_idx)->setWaitBit(true);
+                  }
+                  // TODO: move new_inst into the WIB
+                  
+                  // maybe also return false here since we bypass dependGraph?
+                } else {
+                  // otherwise should insert into depend graph i think?
+                }
                 dependGraph.insert(src_reg->flatIndex(), new_inst);
 
                 // Change the return value to indicate that something

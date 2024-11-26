@@ -86,7 +86,6 @@ class DynInst : public ExecContext, public RefCounted
     {
         size_t numSrcs;
         size_t numDests;
-        bool waitBit;
 
         RegId *flatDestIdx;
         PhysRegIdPtr *destIdx;
@@ -220,11 +219,6 @@ class DynInst : public ExecContext, public RefCounted
     size_t _numSrcs;
     size_t _numDests;
 
-    /** Indicates if the instruction is directly/indirectly 
-     * waiting on a load miss. 
-     */
-    bool _waitBit;
-
     // Flattened register index of the destination registers of this
     // instruction.
     RegId *_flatDestIdx;
@@ -246,9 +240,6 @@ class DynInst : public ExecContext, public RefCounted
   public:
     size_t numSrcs() const { return _numSrcs; }
     size_t numDests() const { return _numDests; }
-
-    // Get the waitBit value.
-    bool isWaiting() const { return _waitBit; }
 
     // Returns the flattened register index of the idx'th destination
     // register.
