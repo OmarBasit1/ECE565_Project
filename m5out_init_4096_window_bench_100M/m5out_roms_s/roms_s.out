@@ -1,0 +1,83 @@
+ Process Information:
+
+
+ Model Input Parameters:  ROMS/TOMS version 3.2  
+                          
+ -----------------------------------------------------------------------------
+
+ Benchmark Test, Idealized Southern Ocean, Large Grid
+ Version adapted for spec, built without netcdf
+
+ Operating system : 
+ CPU/hardware     : 
+ Compiler system  : 
+ Compiler command : 
+ Compiler flags   : 
+
+ SVN Root URL  : https://www.myroms.org/svn/src/trunk
+ SVN Revision  : 405M
+
+ Local Root    : 
+ Header Dir    : 
+ Header file   : benchmark.h
+ Analytical Dir: 
+
+ Resolution, Grid 01: 2048x0512x040,  Parallel Threads:  0,  Tiling: 000x000
+
+
+ Physical Parameters, Grid: 01
+ =============================
+
+        100  ntimes          Number of timesteps for 3-D equations.
+     50.000  dt              Timestep size (s) for 3-D equations.
+         20  ndtfast         Number of timesteps for 2-D equations between
+                               each 3D timestep.
+          1  ERstr           Starting ensemble/perturbation run number.
+          1  ERend           Ending ensemble/perturbation run number.
+          0  nrrec           Number of restart records to read from disk.
+          T  LcycleRST       Switch to recycle time-records in restart file.
+       1000  nRST            Number of timesteps between the writing of data
+                               into restart fields.
+          1  ninfo           Number of timesteps between print of information
+                               to standard output.
+          T  ldefout         Switch to create a new output NetCDF file(s).
+       1000  nHIS            Number of timesteps between the writing fields
+                               into history file.
+ 5.0000E+02  tnu2(01)        Horizontal, harmonic mixing coefficient (m2/s)
+                               for tracer 01: temp
+ 5.0000E+02  tnu2(02)        Horizontal, harmonic mixing coefficient (m2/s)
+                               for tracer 02: salt
+ 5.0000E+03  visc2           Horizontal, harmonic mixing coefficient (m2/s)
+                               for momentum.
+ 1.0000E-05  Akt_bak(01)     Background vertical mixing coefficient (m2/s)
+                               for tracer 01: temp
+ 1.0000E-05  Akt_bak(02)     Background vertical mixing coefficient (m2/s)
+                               for tracer 02: salt
+ 1.0000E-04  Akv_bak         Background vertical mixing coefficient (m2/s)
+                               for momentum.
+ 3.0000E-04  rdrg            Linear bottom drag coefficient (m/s).
+ 3.0000E-03  rdrg2           Quadratic bottom drag coefficient.
+ 2.0000E-02  Zob             Bottom roughness (m).
+ 1.0000E+01  blk_ZQ          Height (m) of surface air humidity measurement.
+ 1.0000E+01  blk_ZT          Height (m) of surface air temperature measurement.
+ 1.0000E+01  blk_ZW          Height (m) of surface winds measurement.
+          1  lmd_Jwt         Jerlov water type.
+          1  Vtransform      S-coordinate transformation equation.
+          1  Vstretching     S-coordinate stretching function.
+ 5.0000E+00  theta_s         S-coordinate surface control parameter.
+ 4.0000E-01  theta_b         S-coordinate bottom  control parameter.
+    200.000  Tcline          S-coordinate surface/bottom layer width (m) used
+                               in vertical coordinate stretching.
+   1025.000  rho0            Mean density (kg/m3) for Boussinesq approximation.
+      0.000  dstart          Time-stamp assigned to model initialization (days).
+       0.00  time_ref        Reference time for units attribute (yyyymmdd.dd)
+ 0.0000E+00  Tnudg(01)       Nudging/relaxation time scale (days)
+                               for tracer 01: temp
+ 0.0000E+00  Tnudg(02)       Nudging/relaxation time scale (days)
+                               for tracer 02: salt
+ 0.0000E+00  Znudg           Nudging/relaxation time scale (days)
+                               for free-surface.
+ 0.0000E+00  M2nudg          Nudging/relaxation time scale (days)
+                               for 2D momentum.
+ 0.0000E+00  M3nudg          Nudging/relaxation time scale (days)
+                               for 3D momentum.

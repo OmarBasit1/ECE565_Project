@@ -1,0 +1,10 @@
+OMNeT++ Discrete Event Simulation  (C) 1992-2008 Andras Varga, OpenSim Ltd.
+Version: 4.0, build: 090310-10709, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+Setting up Cmdenv...
+Loading NED files from a SPEC directory 13
+
+Preparing for running configuration General, run #0...
+Scenario: $repetition=0
+Assigned runID=speccpu-runid
+Setting up network `largeNet'...
