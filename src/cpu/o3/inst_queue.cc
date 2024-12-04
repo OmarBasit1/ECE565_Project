@@ -53,6 +53,7 @@
 #include "params/BaseO3CPU.hh"
 #include "sim/core.hh"
 
+
 // clang complains about std::set being overloaded with Packet::set if
 // we open up the entire namespace std
 using std::list;
@@ -62,6 +63,7 @@ namespace gem5
 
 namespace o3
 {
+int InstructionQueue::miss_count = 0;
 
 InstructionQueue::FUCompletion::FUCompletion(const DynInstPtr &_inst,
     int fu_idx, InstructionQueue *iq_ptr)
@@ -1097,6 +1099,8 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
     // Tag a cache miss load with waitBits
     if (resched_inst->isLoad())
     {
+      miss_count++;
+      std::cout << "misses: " << miss_count << std::endl;
       int8_t total_dest_regs = resched_inst->numDestRegs();
       for (int dest_reg_idx = 0;
            dest_reg_idx < total_dest_regs;
@@ -1203,6 +1207,8 @@ InstructionQueue::doSquash(ThreadID tid)
 
     DPRINTF(IQ, "[tid:%i] Squashing until sequence number %i!\n",
             tid, squashedSeqNum[tid]);
+
+    // TODO: WIB lookup for squashes
 
     // Squash any instructions younger than the squashed sequence number
     // given.

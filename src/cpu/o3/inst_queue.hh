@@ -98,6 +98,7 @@ class IEW;
 class InstructionQueue
 {
   public:
+    static int miss_count;
     // Typedef of iterator through the list of instructions.
     typedef typename std::list<DynInstPtr>::iterator ListIt;
 

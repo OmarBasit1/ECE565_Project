@@ -56,6 +56,7 @@ if env['CONF']['BUILD_ISA']:
     Source('store_set.cc')
     Source('thread_context.cc')
     Source('thread_state.cc')
+    Source('wib.cc')
 
     DebugFlag('CommitRate')
     DebugFlag('IEW')
