@@ -1301,8 +1301,11 @@ Commit::getInsts()
                     tid, inst->seqNum, inst->pcState());
 
             rob->insertInst(inst);
+            wib->insertInst(inst);
 
             assert(rob->getThreadEntries(tid) <= rob->getMaxEntries(tid));
+            assert(wib->getThreadEntries(tid) <= wib->getMaxEntries(tid));
+
 
             youngestSeqNum[tid] = inst->seqNum;
         } else {
