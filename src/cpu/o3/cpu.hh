@@ -431,6 +431,9 @@ class CPU : public BaseCPU
     /** The re-order buffer. */
     ROB rob;
 
+    /** WIB */
+    WIB wib;
+
     /** Active Threads List */
     std::list<ThreadID> activeThreads;
 
