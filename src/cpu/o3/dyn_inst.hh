@@ -833,6 +833,12 @@ class DynInst : public ExecContext, public RefCounted
     /** Sets this instruction as a entry the ROB. */
     void clearInROB() { status.reset(RobEntry); }
 
+        /** Sets this instruction as a entry the WIB. */
+    void setInWIB() { status.set(WibEntry); }
+
+    /** Sets this instruction as a entry the WIB. */
+    void clearInWIB() { status.reset(WibEntry); }
+
     /** Returns whether or not this instruction is in the ROB. */
     bool isInROB() const { return status[RobEntry]; }
 

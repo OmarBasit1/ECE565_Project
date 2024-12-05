@@ -102,6 +102,40 @@ WIB::countInsts(ThreadID tid)
 void
 WIB::insertInst(const DynInstPtr &inst)
 {
+        assert(inst);
+
+    // stats.writes++;
+
+    DPRINTF(WIB, "Adding inst PC %s to the WIB.\n", inst->pcState());
+
+    assert(numInstsInWIB != numEntries);
+
+    ThreadID tid = inst->threadNumber;
+
+    instList[tid].push_back(inst);
+
+    //Set Up head iterator if this is the 1st instruction in the ROB
+    if (numInstsInWIB == 0) {
+        head = instList[tid].begin();
+        assert((*head) == inst);
+    }
+
+    //Must Decrement for iterator to actually be valid  since __.end()
+    //actually points to 1 after the last inst
+    tail = instList[tid].end();
+    tail--;
+
+    inst->setInWIB();
+
+    ++numInstsInWIB;
+    ++threadEntries[tid];
+
+    assert((*tail) == inst);
+
+    DPRINTF(WIB, "[tid:%i] Now has %d instructions.\n", tid,
+            threadEntries[tid]);
+
+    // add bitvector for dependence stuff
 }
 
 unsigned
@@ -125,6 +159,83 @@ void
 WIB::squash(InstSeqNum squash_num, ThreadID tid)
 {
   //calls dosquash
+}
+
+void
+WIB::retireHead(ThreadID tid)
+{
+    // stats.writes++;
+
+    assert(numInstsInWIB > 0);
+
+    // Get the head ROB instruction by copying it and remove it from the list
+    InstIt head_it = instList[tid].begin();
+
+    DynInstPtr head_inst = std::move(*head_it);
+    instList[tid].erase(head_it);
+
+    assert(head_inst->readyToCommit());
+
+    DPRINTF(WIB, "[tid:%i] Retiring head instruction, "
+            "instruction PC %s, [sn:%llu]\n", tid, head_inst->pcState(),
+            head_inst->seqNum);
+
+    --numInstsInWIB;
+    --threadEntries[tid];
+
+    head_inst->clearInROB();
+    head_inst->setCommitted();
+
+    //Update "Global" Head of WIB
+    updateHead();
+
+    // @todo: A special case is needed if the instruction being
+    // retired is the only instruction in the WIB; otherwise the tail
+    // iterator will become invalidated.
+
+    // since a cpu function assuming ROB call for this will take care of it
+    // cpu->removeFrontInst(head_inst);
+}
+
+void
+WIB::updateHead()
+{
+    InstSeqNum lowest_num = 0;
+    bool first_valid = true;
+
+    // @todo: set ActiveThreads through ROB or CPU
+    std::list<ThreadID>::iterator threads = activeThreads->begin();
+    std::list<ThreadID>::iterator end = activeThreads->end();
+
+    while (threads != end) {
+        ThreadID tid = *threads++;
+
+        if (instList[tid].empty())
+            continue;
+
+        if (first_valid) {
+            head = instList[tid].begin();
+            lowest_num = (*head)->seqNum;
+            first_valid = false;
+            continue;
+        }
+
+        InstIt head_thread = instList[tid].begin();
+
+        DynInstPtr head_inst = (*head_thread);
+
+        assert(head_inst != 0);
+
+        if (head_inst->seqNum < lowest_num) {
+            head = head_thread;
+            lowest_num = head_inst->seqNum;
+        }
+    }
+
+    if (first_valid) {
+        head = instList[0].end();
+    }
+
 }
 
 } // namespace o3
