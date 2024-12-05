@@ -702,6 +702,9 @@ if args.elastic_trace_en:
 # frequency.
 for cpu in system.cpu:
     cpu.clk_domain = system.cpu_clk_domain
+    cpu.set_ROB_entries(args.num_ROB_entries),
+    cpu.set_numPhysIntRegs(args.num_phys_int_regs),
+    cpu.set_numPhysFloatRegs(args.num_phys_fp_regs),
 
 if ObjectList.is_kvm_cpu(CPUClass) or ObjectList.is_kvm_cpu(FutureClass):
     if buildEnv["USE_X86_ISA"]:

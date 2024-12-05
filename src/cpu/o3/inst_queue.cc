@@ -1100,13 +1100,13 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
     if (resched_inst->isLoad())
     {
       miss_count++;
-      std::cout << "misses: " << miss_count << std::endl;
+    //   std::cout << "misses: " << miss_count << std::endl;
       int8_t total_dest_regs = resched_inst->numDestRegs();
       for (int dest_reg_idx = 0;
            dest_reg_idx < total_dest_regs;
            dest_reg_idx++)
       {
-        std::cout << "rescheduling load" << std::endl;
+        // std::cout << "rescheduling load" << std::endl;
         resched_inst->renamedDestIdx(dest_reg_idx)->setWaitBit(true);
       }
     }

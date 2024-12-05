@@ -767,6 +767,27 @@ def addSEOptions(parser):
         help="Wait for remote GDB to connect.",
     )
 
+    # num ROB entries
+    parser.add_argument(
+        "--num-ROB-entries",
+        default=224,
+        type=int,
+    )
+
+    # num phy regs
+    parser.add_argument(
+        "--num-phys-int-regs",
+        default=180,
+        type=int,
+    )
+
+    # num phy float regs
+    parser.add_argument(
+        "--num-phys-fp-regs",
+        default=168,
+        type=int,
+    )
+
 
 def addFSOptions(parser):
     from common.FSConfig import os_types
@@ -898,3 +919,5 @@ def addFSOptions(parser):
         action="store_true",
         help="Wait for remote GDB to connect.",
     )
+
+    

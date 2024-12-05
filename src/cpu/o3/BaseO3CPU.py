@@ -74,6 +74,19 @@ class BaseO3CPU(BaseCPU):
     @classmethod
     def support_take_over(cls):
         return True
+    
+    @classmethod
+    def set_ROB_entries(cls, value=224):
+        cls.numROBEntries.value = value
+
+    @classmethod
+    def set_numPhysIntRegs(cls, value=180):
+        cls.numPhysIntRegs.value = value
+        print("numPhysIntRegs: ", cls.numPhysIntRegs.value)
+
+    @classmethod
+    def set_numPhysFloatRegs(cls, value=168):
+        cls.numPhysFloatRegs.value = value
 
     activity = Param.Unsigned(0, "Initial count")
 
