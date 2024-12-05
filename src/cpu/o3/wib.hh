@@ -178,6 +178,14 @@ class WIB
         // The number of wib_writes
         statistics::Scalar writes;
     } stats;
+
+  public:
+    //columns for each load cache miss instruction
+    //rows for each instruction in WIB/ROB that are dependent on the load cache miss
+    std::vector<std::vector<bool>> bitMatrix;
+
+
+
 };
 
 } // namespace o3
