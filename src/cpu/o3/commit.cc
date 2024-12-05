@@ -957,6 +957,7 @@ Commit::commitInsts()
                     "ROB.\n");
 
             rob->retireHead(commit_thread);
+            wib->retireHead(commit_thread);
 
             ++stats.commitSquashedInsts;
             // Notify potential listeners that this instruction is squashed
@@ -1265,6 +1266,7 @@ Commit::commitHead(const DynInstPtr &head_inst, unsigned inst_num)
 
     // Finally clear the head ROB entry.
     rob->retireHead(tid);
+    wib->retireHead(tid);
 
 #if TRACING_ON
     if (debug::O3PipeView) {
