@@ -182,7 +182,8 @@ class WIB
   public:
     //columns for each load cache miss instruction
     //rows for each instruction in WIB/ROB that are dependent on the load cache miss
-    std::vector<std::vector<bool>> bitMatrix;
+    std::vector<std::vector<bool>> bitMatrix[MaxThreads];
+
 
 
 

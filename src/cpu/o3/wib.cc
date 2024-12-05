@@ -31,10 +31,12 @@ WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
         maxEntries[tid] = 0;
     }
 
-    // set size to rows: numEntries/4, columns: numEntries
-    bitMatrix.resize((int)(numEntries*0.25));
-    for (auto& row : bitMatrix) {
-        row.resize(numEntries, 0); // Initialize new bits to 0
+    for (ThreadID tid = 0; tid  < MaxThreads; tid++) {
+        // set size to rows: numEntries/4, columns: numEntries
+        bitMatrix[tid].resize((int)(numEntries*0.25));
+        for (auto& row : bitMatrix[tid]) {
+            row.resize(numEntries, 0); // Initialize new bits to 0
+        }
     }
 
     resetState();
@@ -48,10 +50,13 @@ WIB::resetState()
         squashIt[tid] = instList[tid].end();
         squashedSeqNum[tid] = 0;
         doneSquashing[tid] = true;
+
+        for (auto& row : bitMatrix[tid]) {
+            std::fill(row.begin(), row.end(), false); // Set all bits in each row to false (0)
+        }
     }
-    for (auto& row : bitMatrix) {
-        std::fill(row.begin(), row.end(), false); // Set all bits in each row to false (0)
-    }
+    
+
     numInstsInWIB = 0;
 }
 
