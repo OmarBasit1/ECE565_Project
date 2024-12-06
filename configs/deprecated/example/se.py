@@ -703,6 +703,7 @@ if args.elastic_trace_en:
 for cpu in system.cpu:
     cpu.clk_domain = system.cpu_clk_domain
     cpu.set_ROB_entries(args.num_ROB_entries),
+    cpu.set_IQ_entries(args.num_IQ_entries),
     cpu.set_numPhysIntRegs(args.num_phys_int_regs),
     cpu.set_numPhysFloatRegs(args.num_phys_fp_regs),
 

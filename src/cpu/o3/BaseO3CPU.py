@@ -80,6 +80,10 @@ class BaseO3CPU(BaseCPU):
         cls.numROBEntries.value = value
 
     @classmethod
+    def set_IQ_entries(cls, value=97):
+        cls.numIQEntries.value = value
+
+    @classmethod
     def set_numPhysIntRegs(cls, value=180):
         cls.numPhysIntRegs.value = value
         print("numPhysIntRegs: ", cls.numPhysIntRegs.value)

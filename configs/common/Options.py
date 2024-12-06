@@ -774,6 +774,12 @@ def addSEOptions(parser):
         type=int,
     )
 
+    parser.add_argument(
+        "--num-IQ-entries",
+        default=97,
+        type=int,
+    )
+
     # num phy regs
     parser.add_argument(
         "--num-phys-int-regs",
