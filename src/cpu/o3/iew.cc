@@ -51,6 +51,7 @@
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/fu_pool.hh"
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/wib.hh"
 #include "cpu/timebuf.hh"
 #include "debug/Activity.hh"
 #include "debug/Drain.hh"
@@ -310,6 +311,14 @@ void
 IEW::setScoreboard(Scoreboard *sb_ptr)
 {
     scoreboard = sb_ptr;
+}
+
+void
+IEW::setWIB(WIB *wib_ptr)
+{
+    wib = wib_ptr;
+    // also need to set WIB pointer in inst_queue
+    instQueue.setWIB(wib);
 }
 
 bool

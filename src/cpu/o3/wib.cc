@@ -20,8 +20,6 @@ WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
       numThreads(params.numThreads),
       stats(_cpu)
 {
-    // TODO: pwibably want to give each thread numEntries / numThreads entires into WIB
-
     //Set Max Entries to Total ROB Capacity
     for (ThreadID tid = 0; tid < numThreads; tid++) {
         maxEntries[tid] = numEntries;
@@ -31,9 +29,12 @@ WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
         maxEntries[tid] = 0;
     }
 
+    numLoads = (int)(numEntires * 0.25);
     for (ThreadID tid = 0; tid  < MaxThreads; tid++) {
-        // set size to rows: numEntries/4, columns: numEntries
-        bitMatrix[tid].resize((int)(numEntries*0.25));
+        head[tid] = 0;
+        tail[tid] = 0;
+        // set size to rows: numLoads, columns: numEntries
+        bitMatrix[tid].resize(numLoads);
         for (auto& row : bitMatrix[tid]) {
             row.resize(numEntries, 0); // Initialize new bits to 0
         }
@@ -117,6 +118,46 @@ size_t
 WIB::countInsts(ThreadID tid)
 {
     return instList[tid].size();
+}
+
+std::vector<bool>*
+WIB::addColumn(const DynInstPtr &inst)
+{
+    assert(inst);
+    ThreadID tid = inst->threadNumber;
+
+    size_t newColIdx = tail[tid];
+
+    tail[tid] = (tail[tid] + 1) % numLoads;
+
+    if (tail[tid] == head[tid]) {
+      std::cout << "WIB OVERFLOW: numLoads too small in WIB" << std::endl;
+      return nullptr;
+    }
+
+    // clear column
+    for (auto& row: bitMatrix[tid]) {
+      row[newColIdx] = false;
+    }
+    
+    // return pointer to the new column
+    return &bitMatrix[tid][newColIdx]
+}
+
+void
+WIB::removeColumn(const DynInstPtr &inst)
+{
+    size_t oldColIdx = head[tid];
+    
+    // process the columns rows to send dependencies back to issue queue
+    for (auto& row : bitMatrix[tid]) {
+        if (bitMatrix[tid][row][oldColIdx]) {
+            // send instruction at current row to issue queue
+        }
+        row[oldColIdx] = false;
+    }
+    
+    head[tid] = (head[tid] + 1) % numLoads;
 }
 
 void

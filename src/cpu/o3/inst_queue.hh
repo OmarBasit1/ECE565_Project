@@ -56,6 +56,7 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/mem_dep_unit.hh"
 #include "cpu/o3/store_set.hh"
+#include "cpu/o3/wib.hh"
 #include "cpu/op_class.hh"
 #include "cpu/timebuf.hh"
 #include "enums/SMTQueuePolicy.hh"
@@ -151,6 +152,9 @@ class InstructionQueue
 
     /** Sets the global time buffer. */
     void setTimeBuffer(TimeBuffer<TimeStruct> *tb_ptr);
+
+    /** Sets the WIB buffer pointer. */
+    void setWIB(WIB *wib_ptr);
 
     /** Determine if we are drained. */
     bool isDrained() const;

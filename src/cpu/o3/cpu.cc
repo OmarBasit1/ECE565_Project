@@ -171,6 +171,7 @@ CPU::CPU(const BaseO3CPUParams &params)
     rename.setRenameQueue(&renameQueue);
     iew.setRenameQueue(&renameQueue);
     iew.setIEWQueue(&iewQueue);
+    iew.setWIB(&wib);
     commit.setIEWQueue(&iewQueue);
     commit.setRenameQueue(&renameQueue);
 

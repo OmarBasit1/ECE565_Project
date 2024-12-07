@@ -262,6 +262,8 @@ Commit::setRenameMap(UnifiedRenameMap::PerThreadUnifiedRenameMap& rm_ptr)
 
 void Commit::setROB(ROB *rob_ptr) { rob = rob_ptr; }
 
+void Commit::setWIB(WIB *wib_ptr) { wib = wib_ptr; }
+
 void
 Commit::startupStage()
 {

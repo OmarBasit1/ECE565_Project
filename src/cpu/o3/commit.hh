@@ -52,6 +52,7 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/rename_map.hh"
 #include "cpu/o3/rob.hh"
+#include "cpu/o3/wib.hh"
 #include "cpu/timebuf.hh"
 #include "enums/CommitPolicy.hh"
 #include "sim/probe/probe.hh"
@@ -171,6 +172,9 @@ class Commit
 
     /** Sets pointer to the ROB. */
     void setROB(ROB *rob_ptr);
+
+    /** Sets pointer to the WIB */
+    void setWIB(WIB *wib_ptr);
 
     /** Initializes stage by sending back the number of free entries. */
     void startupStage();

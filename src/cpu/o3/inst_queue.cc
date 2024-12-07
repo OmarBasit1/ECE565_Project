@@ -48,8 +48,10 @@
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/fu_pool.hh"
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/wib.hh"
 #include "debug/IQ.hh"
 #include "enums/OpClass.hh"
+#include "inst_queue.hh"
 #include "params/BaseO3CPU.hh"
 #include "sim/core.hh"
 
@@ -449,6 +451,12 @@ InstructionQueue::setTimeBuffer(TimeBuffer<TimeStruct> *tb_ptr)
     timeBuffer = tb_ptr;
 
     fromCommit = timeBuffer->getWire(-commitToIEWDelay);
+}
+
+void
+InstructionQueue::setWIB(WIB *wib_ptr)
+{
+    wib = wib_ptr;
 }
 
 bool
@@ -1096,19 +1104,14 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
     resched_inst->translationStarted(false);
     resched_inst->translationCompleted(false);
 
-    // Tag a cache miss load with waitBits
+    // Tag a cache miss load with waitBits and add to WIB
     if (resched_inst->isLoad())
     {
       miss_count++;
     //   std::cout << "misses: " << miss_count << std::endl;
-      int8_t total_dest_regs = resched_inst->numDestRegs();
-      for (int dest_reg_idx = 0;
-           dest_reg_idx < total_dest_regs;
-           dest_reg_idx++)
-      {
-        // std::cout << "rescheduling load" << std::endl;
-        resched_inst->renamedDestIdx(dest_reg_idx)->setWaitBit(true);
-      }
+      resched_inst->renamedDestIdx(0)->setWaitBit(true);
+      std::vector<bool>* columnPtr = wib->addColumn(resched_inst);
+      resched_inst->renamedDestReg(0)->setWaitColumn(columnPtr);
     }
 
     resched_inst->clearCanIssue();
@@ -1380,6 +1383,11 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
 
                 // propogate the waitBit to dependent physical registers
                 if (src_reg->isWaitBit()) {
+                  // set the waiting source register to "pretend ready"
+                  // and only when issueing the isntruction check if needs
+                  // to go to WIB or normal execute to allow it to leave
+                  // the issue queue
+                  new_inst->markSrcRegReady(src_reg_idx);
                   for (int dest_reg_idx = 0;
                        dest_reg_idx < total_dest_regs;
                        dest_reg_idx++)
@@ -1387,17 +1395,13 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
                     // std::cout << "DEP ISNTR" << std::endl;
                     new_inst->renamedDestIdx(dest_reg_idx)->setWaitBit(true);
                   }
-                  // TODO: move new_inst into the WIB
-                  
-                  // maybe also return false here since we bypass dependGraph?
+                    return_val = false;
                 } else {
-                  // otherwise should insert into depend graph i think?
+                  dependGraph.insert(src_reg->flatIndex(), new_inst);
+                  // Change the return value to indicate that something
+                  // was added to the dependency graph.
+                  return_val = true;
                 }
-                dependGraph.insert(src_reg->flatIndex(), new_inst);
-
-                // Change the return value to indicate that something
-                // was added to the dependency graph.
-                return_val = true;
             } else {
                 DPRINTF(IQ, "Instruction PC %s has src reg %i (%s) that "
                         "became ready before it reached the IQ.\n",

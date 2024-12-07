@@ -51,6 +51,7 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/lsq.hh"
 #include "cpu/o3/scoreboard.hh"
+#include "cpu/o3/wib.hh"
 #include "cpu/timebuf.hh"
 #include "debug/IEW.hh"
 #include "sim/probe/probe.hh"
@@ -155,6 +156,9 @@ class IEW
 
     /** Sets pointer to the scoreboard. */
     void setScoreboard(Scoreboard *sb_ptr);
+
+    /** Sets pointer to the WIB. */
+    void setWIB(WIB *wib_ptr);
 
     /** Perform sanity checks after a drain. */
     void drainSanityCheck() const;
@@ -353,8 +357,6 @@ class IEW
   public:
     /** Instruction queue. */
     InstructionQueue instQueue;
-
-    //TODO: add wib
 
     /** Load / store queue. */
     LSQ ldstQueue;

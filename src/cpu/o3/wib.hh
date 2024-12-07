@@ -183,10 +183,13 @@ class WIB
     //columns for each load cache miss instruction
     //rows for each instruction in WIB/ROB that are dependent on the load cache miss
     std::vector<std::vector<bool>> bitMatrix[MaxThreads];
+    size_t head[MaxThreads];
+    size_t tail[MaxThreads];
+    size_t numLoads;
 
-
-
-
+    // adds new load to WIB, returns the column of the bitMatrix
+    std::vector<bool>* addColumn(const DynInstPtr &inst);
+    void removeColumn(const DynInstPtr &inst);
 };
 
 } // namespace o3
