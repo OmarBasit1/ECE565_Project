@@ -214,11 +214,115 @@ WIB::numFreeEntries(ThreadID tid)
 void
 WIB::doSquash(ThreadID tid)
 {
+    // stats.writes++;
+    DPRINTF(WIB, "[tid:%i] Squashing instructions until [sn:%llu].\n",
+            tid, squashedSeqNum[tid]);
+
+    assert(squashIt[tid] != instList[tid].end());
+
+    if ((*squashIt[tid])->seqNum < squashedSeqNum[tid]) {
+        DPRINTF(WIB, "[tid:%i] Done squashing instructions.\n",
+                tid);
+
+        squashIt[tid] = instList[tid].end();
+
+        doneSquashing[tid] = true;
+        return;
+    }
+
+    bool wibTailUpdate = false;
+
+    unsigned int numInstsToSquash = squashWidth;
+
+    // If the CPU is exiting, squash all of the instructions
+    // it is told to, even if that exceeds the squashWidth.
+    // Set the number to the number of entries (the max).
+    if (cpu->isThreadExiting(tid))
+    {
+        numInstsToSquash = numEntries;
+    }
+
+    for (int numSquashed = 0;
+         numSquashed < numInstsToSquash &&
+         squashIt[tid] != instList[tid].end() &&
+         (*squashIt[tid])->seqNum > squashedSeqNum[tid];
+         ++numSquashed)
+    {
+        DPRINTF(WIB, "[tid:%i] Squashing instruction PC %s, seq num %i.\n",
+                (*squashIt[tid])->threadNumber,
+                (*squashIt[tid])->pcState(),
+                (*squashIt[tid])->seqNum);
+
+        // Mark the instruction as squashed, and ready to commit so that
+        // it can drain out of the pipeline.
+        (*squashIt[tid])->setSquashed();
+
+        // (*squashIt[tid])->setCanCommit();
+
+
+        if (squashIt[tid] == instList[tid].begin()) {
+            DPRINTF(WIB, "Reached head of instruction list while "
+                    "squashing.\n");
+
+            squashIt[tid] = instList[tid].end();
+
+            doneSquashing[tid] = true;
+
+            return;
+        }
+
+        InstIt tail_thread = instList[tid].end();
+        tail_thread--;
+
+        if ((*squashIt[tid]) == (*tail_thread))
+            robTailUpdate = true;
+
+        squashIt[tid]--;
+    }
+
+
+    // Check if ROB is done squashing.
+    if ((*squashIt[tid])->seqNum <= squashedSeqNum[tid]) {
+        DPRINTF(WIB, "[tid:%i] Done squashing instructions.\n",
+                tid);
+
+        squashIt[tid] = instList[tid].end();
+
+        doneSquashing[tid] = true;
+    }
+
+    if (robTailUpdate) {
+        updateTail();
+    }
 }
 
 void
 WIB::squash(InstSeqNum squash_num, ThreadID tid)
 {
+    if (isEmpty(tid)) {
+        DPRINTF(WIB, "Does not need to squash due to being empty "
+                "[sn:%llu]\n",
+                squash_num);
+
+        return;
+    }
+    DPRINTF(WIB, "Starting to squash within the WIB.\n");
+
+    wibStatus[tid] = WIBSquashing;
+
+    doneSquashing[tid] = false;
+
+    squashedSeqNum[tid] = squash_num;
+
+    if (!instList[tid].empty()) {
+        InstIt tail_thread = instList[tid].end();
+        tail_thread--;
+
+        squashIt[tid] = tail_thread;
+
+        doSquash(tid);
+    }
+
   //calls dosquash
 }
 
