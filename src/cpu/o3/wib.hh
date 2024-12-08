@@ -10,6 +10,7 @@
 #include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/limits.hh"
 #include "cpu/reg_class.hh"
+#include "dyn_inst.hh"
 
 namespace gem5
 {
@@ -32,33 +33,13 @@ class WIB
     typedef std::pair<RegIndex, RegIndex> UnmapInfo;
     typedef typename std::list<DynInstPtr>::iterator InstIt;
 
-    /** Possible WIB statuses. */
-    enum Status
-    {
-        Running,
-        Idle,
-        WIBSquashing
-    };
-
-  private:
-    /** Per-thread WIB status. */
-    Status wibStatus[MaxThreads];
-
   public:
     WIB(CPU *_cpu, const BaseO3CPUParams &params);
 
     std::string name() const;
 
-    /** Sets pointer to the list of active threads.
-     *  @param at_ptr Pointer to the list of active threads.
-     */
-    void setActiveThreads(std::list<ThreadID> *at_ptr);
-
     /** Perform sanity checks after a drain. */
     void drainSanityCheck() const;
-
-    /** Takes over another CPU's thread. */
-    void takeOverFrom();
 
     /** Function to insert an instruction into the WIB. Note that whatever
      *  calls this function must ensure that there is enough space within the
@@ -67,49 +48,44 @@ class WIB
      */
     void insertInst(const DynInstPtr &inst);
 
+    /** Retires the head instruction of a specific thread, removing it from the
+     *  ROB.
+     */
+    void retireHead();
+
     /** Returns the number of total free entries in the WIB. */
     unsigned numFreeEntries();
 
     /** Returns the number of free entries in a specific WIB paritition. */
-    unsigned numFreeEntries(ThreadID tid);
-
-    /** Returns the maximum number of entries for a specific thread. */
-    unsigned getMaxEntries(ThreadID tid)
-    { return maxEntries[tid]; }
-
-    /** Returns the number of entries being used by a specific thread. */
-    unsigned getThreadEntries(ThreadID tid)
-    { return threadEntries[tid]; }
+    unsigned numFreeEntries();
 
     /** Returns if the WIB is full. */
     bool isFull()
     { return numInstsInWIB == numEntries; }
 
-    /** Returns if a specific thread's partition is full. */
-    bool isFull(ThreadID tid)
-    { return threadEntries[tid] == numEntries; }
-
     /** Returns if the WIB is empty. */
     bool isEmpty() const
     { return numInstsInWIB == 0; }
 
-    /** Returns if a specific thread's partition is empty. */
-    bool isEmpty(ThreadID tid) const
-    { return threadEntries[tid] == 0; }
-
     /** Executes the squash, marking squashed instructions. */
-    void doSquash(ThreadID tid);
+    void doSquash();
 
     /** Squashes all instructions younger than the given sequence number for
      *  the specific thread.
      */
-    void squash(InstSeqNum squash_num, ThreadID tid);
+    void squash(InstSeqNum squash_num);
+
+    /** Updates the head instruction with the new oldest instruction. */
+    void updateHead();
+
+    /** Updates the tail instruction with the new youngest instruction. */
+    void updateTail();
 
     /** Checks if the WIB is still in the process of squashing instructions.
      *  @retval Whether or not the WIB is done squashing.
      */
-    bool isDoneSquashing(ThreadID tid) const
-    { return doneSquashing[tid]; }
+    bool isDoneSquashing() const
+    { return doneSquashing; }
 
     /** Checks if the WIB is still in the process of squashing instructions for
      *  any thread.
@@ -123,20 +99,8 @@ class WIB
     /** Pointer to the CPU. */
     CPU *cpu;
 
-    /** Active Threads in CPU */
-    std::list<ThreadID> *activeThreads;
-
     /** Number of instructions in the WIB. */
     unsigned numEntries;
-
-    /** Entries Per Thread */
-    unsigned threadEntries[MaxThreads];
-
-    /** Max Insts a Thread Can Have in the WIB */
-    unsigned maxEntries[MaxThreads];
-
-    /** WIB List of Instructions */
-    std::list<DynInstPtr> instList[MaxThreads];
 
     /** Number of instructions that can be squashed in a single cycle. */
     unsigned squashWidth;
@@ -149,7 +113,7 @@ class WIB
      *  and after a squash.
      *  This will always be set to cpu->instList.end() if it is invalid.
      */
-    InstIt squashIt[MaxThreads];
+    InstIt squashIt;
 
   public:
     /** Number of instructions in the WIB. */
@@ -160,14 +124,10 @@ class WIB
 
   private:
     /** The sequence number of the squashed instruction. */
-    InstSeqNum squashedSeqNum[MaxThreads];
+    InstSeqNum squashedSeqNum;
 
     /** Is the WIB done squashing. */
-    bool doneSquashing[MaxThreads];
-
-    /** Number of active threads. */
-    ThreadID numThreads;
-
+    bool doneSquashing;
 
     struct WIBStats : public statistics::Group
     {
@@ -182,14 +142,32 @@ class WIB
   public:
     //columns for each load cache miss instruction
     //rows for each instruction in WIB/ROB that are dependent on the load cache miss
-    std::vector<std::vector<bool>> bitMatrix[MaxThreads];
-    size_t head[MaxThreads];
-    size_t tail[MaxThreads];
+    std::vector<std::vector<bool>> bitMatrix;
+    
+    // list of instructions active instructions
+    std::vector<DynInstPtr> instList;
+    // list of load misses
+    std::vector<DynInstPtr> loadList;
+
+    // head/tail pointers for instList
+    size_t headInst;
+    size_t tailInst;
+
     size_t numLoads;
 
-    // adds new load to WIB, returns the column of the bitMatrix
-    std::vector<bool>* addColumn(const DynInstPtr &inst);
-    void removeColumn(const DynInstPtr &inst);
+    // adds new load to WIB, returns the column idx of the bitMatrix
+    size_t addColumn(const DynInstPtr &inst);
+    // removes column when the load completes
+    void removeColumn(const size_t colIdx);
+
+    // squash column if the load miss instruction gets squashed
+    void squashColumn(const size_t colIdx);
+    // squash row if the instruction gets squashed in issue queue
+    void squashRow(const size_t rowIdx);
+    
+    // tag pretend ready instructions in WIB instead of issueing
+    void tagDependentInst(const DynInstrPtr &inst, const size_t colIdx);
+
 };
 
 } // namespace o3
