@@ -155,7 +155,7 @@ WIB::doSquash(InstSeqNum squash_num)
     // let ROB handle the instruction state on squashes, just need
     // to handle local head/tail index here, and update bitMatrix
     
-    currentIdx = tailInst;
+    size_t currentIdx = tailInst;
     while (instList[currentIdx]->seqNum < squashedSeqNum) {
       squashRow(currentIdx);
       currentIdx = (currentIdx - 1) % numEntries;
