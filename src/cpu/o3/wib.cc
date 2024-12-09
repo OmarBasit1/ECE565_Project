@@ -19,7 +19,7 @@ WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
       squashWidth(1),
       stats(_cpu)
 {
-    numLoads = (int)(numEntires * 0.25);
+    numLoads = (int)(numEntries * 0.25);
 
     headInst = 0;
     tailInst = 1;
@@ -36,7 +36,6 @@ WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
     bitMatrix.resize(numLoads);
     for (auto& row : bitMatrix) {
         row.resize(numEntries, false); // Initialize new bits to false
-    }
     }
 
     resetState();
@@ -74,10 +73,10 @@ WIB::addColumn(const DynInstPtr &inst)
     size_t colIdx = 0;
 
     for (int i = 0; i < numLoads; i++) {
-      if (loadList[i] == nullptr) {
+      if (!loadList[i]) {
         colIdx = i;
         loadList[colIdx] = inst;
-        inst->setColIdx(colIdx);
+        inst->setWaitColumn(colIdx);
         break;
       }
     }
@@ -127,7 +126,7 @@ WIB::insertInst(const DynInstPtr &inst)
 {
     assert(inst);
 
-    tailInst = (tailInst + 1) % numEntires;
+    tailInst = (tailInst + 1) % numEntries;
     instList[tailInst] = inst;
 
     ++numInstsInWIB;

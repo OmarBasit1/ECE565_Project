@@ -959,7 +959,7 @@ Commit::commitInsts()
                     "ROB.\n");
 
             rob->retireHead(commit_thread);
-            wib->retireHead(commit_thread);
+            wib->retireHead();
 
             ++stats.commitSquashedInsts;
             // Notify potential listeners that this instruction is squashed
@@ -1268,7 +1268,7 @@ Commit::commitHead(const DynInstPtr &head_inst, unsigned inst_num)
 
     // Finally clear the head ROB entry.
     rob->retireHead(tid);
-    wib->retireHead(tid);
+    wib->retireHead();
 
 #if TRACING_ON
     if (debug::O3PipeView) {
@@ -1308,7 +1308,7 @@ Commit::getInsts()
             wib->insertInst(inst);
 
             assert(rob->getThreadEntries(tid) <= rob->getMaxEntries(tid));
-            assert(wib->getThreadEntries(tid) <= wib->getMaxEntries(tid));
+            // assert(wib->getThreadEntries(tid) <= wib->getMaxEntries(tid));
 
 
             youngestSeqNum[tid] = inst->seqNum;

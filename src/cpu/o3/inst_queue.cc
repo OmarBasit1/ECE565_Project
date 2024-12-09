@@ -840,25 +840,25 @@ InstructionQueue::scheduleReadyInsts()
             }
         }
 
-        bool pretendReady = false;
-        size_t colIdx = 0;
-        for (int src_reg_idx = 0;
-             src_reg_idx < total_src_regs;
-             src_reg_idx++)
-        {
-            if (issuing_inst->renamedSrcReg(src_reg_idx)->isWaitBit()) {
-                pretendReady = true;
-                colIdx = issuing_inst->renamedSrcReg(src_reg_idx)->getWaitColumn();
-            }
-        }
-        // if instruction is pretend ready, move it to the WIB and dont issue to FU
-        if (pretendReady) {
-            wib->tagDependentInst(issuing_inst, colIdx);
-        }
+        // bool pretendReady = false;
+        // size_t colIdx = 0;
+        // for (int src_reg_idx = 0;
+        //      src_reg_idx < total_src_regs;
+        //      src_reg_idx++)
+        // {
+        //     if (issuing_inst->renamedSrcReg(src_reg_idx)->isWaitBit()) {
+        //         pretendReady = true;
+        //         colIdx = issuing_inst->renamedSrcReg(src_reg_idx)->getWaitColumn();
+        //     }
+        // }
+        // // if instruction is pretend ready, move it to the WIB and dont issue to FU
+        // if (pretendReady) {
+        //     wib->tagDependentInst(issuing_inst, colIdx);
+        // }
 
         // If we have an instruction that doesn't require a FU, or a
         // valid FU, then schedule for execution.
-        else if (idx != FUPool::NoFreeFU) {
+        if (idx != FUPool::NoFreeFU) {
             if (op_latency == Cycles(1)) {
                 i2e_info->size++;
                 instsToExecute.push_back(issuing_inst);

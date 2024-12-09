@@ -56,9 +56,6 @@ class WIB
     /** Returns the number of total free entries in the WIB. */
     unsigned numFreeEntries();
 
-    /** Returns the number of free entries in a specific WIB paritition. */
-    unsigned numFreeEntries();
-
     /** Returns if the WIB is full. */
     bool isFull()
     { return numInstsInWIB == numEntries; }
@@ -68,7 +65,7 @@ class WIB
     { return numInstsInWIB == 0; }
 
     /** Executes the squash, marking squashed instructions. */
-    void doSquash();
+    void doSquash(InstSeqNum squash_num);
 
     /** Squashes all instructions younger than the given sequence number for
      *  the specific thread.
@@ -166,7 +163,7 @@ class WIB
     void squashRow(const size_t rowIdx);
     
     // tag pretend ready instructions in WIB instead of issueing
-    void tagDependentInst(const DynInstrPtr &inst, const size_t colIdx);
+    void tagDependentInst(const DynInstPtr &inst, const size_t colIdx);
 
 };
 
