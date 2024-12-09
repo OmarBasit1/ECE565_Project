@@ -48,7 +48,6 @@
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/fu_pool.hh"
 #include "cpu/o3/limits.hh"
-// #include "cpu/o3/wib.hh"
 #include "debug/IQ.hh"
 #include "enums/OpClass.hh"
 #include "inst_queue.hh"
