@@ -7,10 +7,11 @@
 
 #include "base/statistics.hh"
 #include "base/types.hh"
+#include "cpu/inst_seq.hh"
+#include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/limits.hh"
 #include "cpu/reg_class.hh"
-#include "dyn_inst.hh"
 
 namespace gem5
 {
@@ -126,15 +127,15 @@ class WIB
     /** Is the WIB done squashing. */
     bool doneSquashing;
 
-    struct WIBStats : public statistics::Group
-    {
-        WIBStats(statistics::Group *parent);
-
-        // The number of wib_reads
-        statistics::Scalar reads;
-        // The number of wib_writes
-        statistics::Scalar writes;
-    } stats;
+    // struct WIBStats : public statistics::Group
+    // {
+    //     WIBStats(statistics::Group *parent);
+    //
+    //     // The number of wib_reads
+    //     statistics::Scalar reads;
+    //     // The number of wib_writes
+    //     statistics::Scalar writes;
+    // } stats;
 
   public:
     //columns for each load cache miss instruction

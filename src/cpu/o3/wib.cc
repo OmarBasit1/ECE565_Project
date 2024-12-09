@@ -16,8 +16,8 @@ namespace o3
 WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
     : cpu(_cpu),
       numEntries(params.numWIBEntries), //need to add to params
-      squashWidth(1),
-      stats(_cpu)
+      squashWidth(1)
+      // stats(_cpu)
 {
     numLoads = (int)(numEntries * 0.25);
 
@@ -60,11 +60,6 @@ WIB::name() const
     return cpu->name() + ".wib";
 }
 
-void
-WIB::resetEntries()
-{
-}
-
 size_t
 WIB::addColumn(const DynInstPtr &inst)
 {
@@ -76,7 +71,7 @@ WIB::addColumn(const DynInstPtr &inst)
       if (!loadList[i]) {
         colIdx = i;
         loadList[colIdx] = inst;
-        inst->setWaitColumn(colIdx);
+        inst->renamedDestIdx(0)->setWaitColumn(colIdx);
         break;
       }
     }
