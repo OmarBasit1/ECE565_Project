@@ -358,6 +358,8 @@ class IEW
     /** Instruction queue. */
     InstructionQueue instQueue;
 
+    WIB *wib;
+
     /** Load / store queue. */
     LSQ ldstQueue;
 

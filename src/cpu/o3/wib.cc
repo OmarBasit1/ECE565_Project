@@ -16,28 +16,26 @@ namespace o3
 WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
     : cpu(_cpu),
       numEntries(params.numWIBEntries), //need to add to params
-      squashWidth(1),
-      numThreads(params.numThreads),
-      stats(_cpu)
+      squashWidth(1)
+      // stats(_cpu)
 {
-    //Set Max Entries to Total ROB Capacity
-    for (ThreadID tid = 0; tid < numThreads; tid++) {
-        maxEntries[tid] = numEntries;
+    numLoads = (int)(numEntries * 0.25);
+
+    headInst = 0;
+    tailInst = 1;
+    instList.resize(numEntries);
+    for (size_t i = 0; i < numEntries; ++i) {
+        instList[i] = nullptr;
+    }
+    loadList.resize(numLoads);
+    for (size_t i = 0; i < numLoads; ++i) {
+        loadList[i] = nullptr;
     }
 
-    for (ThreadID tid = numThreads; tid < MaxThreads; tid++) {
-        maxEntries[tid] = 0;
-    }
-
-    numLoads = (int)(numEntires * 0.25);
-    for (ThreadID tid = 0; tid  < MaxThreads; tid++) {
-        head[tid] = 0;
-        tail[tid] = 0;
-        // set size to rows: numLoads, columns: numEntries
-        bitMatrix[tid].resize(numLoads);
-        for (auto& row : bitMatrix[tid]) {
-            row.resize(numEntries, 0); // Initialize new bits to 0
-        }
+    // set size to rows: numLoads, columns: numEntries
+    bitMatrix.resize(numLoads);
+    for (auto& row : bitMatrix) {
+        row.resize(numEntries, false); // Initialize new bits to false
     }
 
     resetState();
@@ -46,17 +44,12 @@ WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
 void
 WIB::resetState()
 {
-    for (ThreadID tid = 0; tid  < MaxThreads; tid++) {
-        threadEntries[tid] = 0;
-        squashIt[tid] = instList[tid].end();
-        squashedSeqNum[tid] = 0;
-        doneSquashing[tid] = true;
+    squashedSeqNum = 0;
+    doneSquashing = true;
 
-        for (auto& row : bitMatrix[tid]) {
-            std::fill(row.begin(), row.end(), false); // Set all bits in each row to false (0)
-        }
+    for (auto& row : bitMatrix) {
+        std::fill(row.begin(), row.end(), false); // Set all bits in each row to false (0)
     }
-    
 
     numInstsInWIB = 0;
 }
@@ -67,136 +60,82 @@ WIB::name() const
     return cpu->name() + ".wib";
 }
 
-void
-WIB::setActiveThreads(std::list<ThreadID> *at_ptr)
-{
-    DPRINTF(WIB, "Setting active threads list pointer.\n");
-    activeThreads = at_ptr;
-}
-
-void
-WIB::drainSanityCheck() const
-{
-    for (ThreadID tid = 0; tid  < numThreads; tid++)
-        assert(instList[tid].empty());
-    assert(isEmpty());
-}
-
-void
-WIB::takeOverFrom()
-{
-    resetState();
-}
-
-void
-WIB::resetEntries()
-{
-}
-
-int
-WIB::entryAmount(ThreadID num_threads)
-{
-    if (wibPolicy == SMTQueuePolicy::Partitioned) {
-        return numEntries / num_threads;
-    } else {
-        return 0;
-    }
-}
-
-int
-WIB::countInsts()
-{
-    int total = 0;
-
-    for (ThreadID tid = 0; tid < numThreads; tid++)
-        total += countInsts(tid);
-
-    return total;
-}
-
 size_t
-WIB::countInsts(ThreadID tid)
-{
-    return instList[tid].size();
-}
-
-std::vector<bool>*
 WIB::addColumn(const DynInstPtr &inst)
 {
     assert(inst);
-    ThreadID tid = inst->threadNumber;
+    
+    size_t colIdx = 0;
 
-    size_t newColIdx = tail[tid];
-
-    tail[tid] = (tail[tid] + 1) % numLoads;
-
-    if (tail[tid] == head[tid]) {
-      std::cout << "WIB OVERFLOW: numLoads too small in WIB" << std::endl;
-      return nullptr;
+    for (int i = 0; i < numLoads; i++) {
+      if (!loadList[i]) {
+        colIdx = i;
+        loadList[colIdx] = inst;
+        inst->renamedDestIdx(0)->setWaitColumn(colIdx);
+        break;
+      }
     }
 
-    // clear column
-    for (auto& row: bitMatrix[tid]) {
-      row[newColIdx] = false;
+    // reset column
+    for (auto& row: bitMatrix) {
+      row[colIdx] = false;
     }
     
-    // return pointer to the new column
-    return &bitMatrix[tid][newColIdx]
+    // return the new column idx for the dependent instructions
+    return colIdx;
 }
 
 void
-WIB::removeColumn(const DynInstPtr &inst)
+WIB::removeColumn(const size_t colIdx)
 {
-    size_t oldColIdx = head[tid];
-    
-    // process the columns rows to send dependencies back to issue queue
-    for (auto& row : bitMatrix[tid]) {
-        if (bitMatrix[tid][row][oldColIdx]) {
-            // send instruction at current row to issue queue
+    // process the columns rows to send dependendent insts back to issue queue
+    loadList[colIdx] = nullptr;
+    for (auto& row : bitMatrix) {
+        if (row[colIdx]) {
+            // TODO: send instruction at current row to be dispatched into IQ
+            // instList[colIdx] is inst that needs dispatched
+            // MAKE SURE TO CLEAR WAITBIT OF DEST REG WHEN SENT TO DISPATCH
+            row[colIdx] = false;
         }
-        row[oldColIdx] = false;
     }
-    
-    head[tid] = (head[tid] + 1) % numLoads;
+}
+
+void
+WIB::squashColumn(const size_t colIdx)
+{
+    loadList[colIdx] = nullptr;
+    for (auto& row : bitMatrix) {
+        row[colIdx] = false;
+    }
+}
+
+void
+WIB::squashRow(const size_t rowIdx)
+{
+    instList[rowIdx] = nullptr;
+    std::fill(bitMatrix[rowIdx].begin(), bitMatrix[rowIdx].end(), false);
 }
 
 void
 WIB::insertInst(const DynInstPtr &inst)
 {
-        assert(inst);
+    assert(inst);
 
-    // stats.writes++;
-
-    DPRINTF(WIB, "Adding inst PC %s to the WIB.\n", inst->pcState());
-
-    assert(numInstsInWIB != numEntries);
-
-    ThreadID tid = inst->threadNumber;
-
-    instList[tid].push_back(inst);
-
-    //Set Up head iterator if this is the 1st instruction in the ROB
-    if (numInstsInWIB == 0) {
-        head = instList[tid].begin();
-        assert((*head) == inst);
-    }
-
-    //Must Decrement for iterator to actually be valid  since __.end()
-    //actually points to 1 after the last inst
-    tail = instList[tid].end();
-    tail--;
-
-    inst->setInWIB();
+    tailInst = (tailInst + 1) % numEntries;
+    instList[tailInst] = inst;
 
     ++numInstsInWIB;
-    ++threadEntries[tid];
+}
 
-    assert((*tail) == inst);
-
-    DPRINTF(WIB, "[tid:%i] Now has %d instructions.\n", tid,
-            threadEntries[tid]);
-
-    // add bitvector for dependence stuff
+void
+WIB::tagDependentInst(const DynInstPtr &inst, const size_t colIdx) {
+    assert(inst);
+    for (int i = 0; i < numEntries; i++) {
+        if (instList[i]->seqNum == inst->seqNum) {
+            bitMatrix[i][colIdx] = true;
+            break;
+        }
+    }
 }
 
 unsigned
@@ -205,202 +144,39 @@ WIB::numFreeEntries()
     return numEntries - numInstsInWIB;
 }
 
-unsigned
-WIB::numFreeEntries(ThreadID tid)
+void
+WIB::doSquash(InstSeqNum squash_num)
 {
-    return maxEntries[tid] - threadEntries[tid];
+    // let ROB handle the instruction state on squashes, just need
+    // to handle local head/tail index here, and update bitMatrix
+    
+    size_t currentIdx = tailInst;
+    while (instList[currentIdx]->seqNum < squashedSeqNum) {
+      squashRow(currentIdx);
+      currentIdx = (currentIdx - 1) % numEntries;
+    }
+    doneSquashing = true;
 }
 
 void
-WIB::doSquash(ThreadID tid)
+WIB::squash(InstSeqNum squash_num)
 {
-    // stats.writes++;
-    DPRINTF(WIB, "[tid:%i] Squashing instructions until [sn:%llu].\n",
-            tid, squashedSeqNum[tid]);
-
-    assert(squashIt[tid] != instList[tid].end());
-
-    if ((*squashIt[tid])->seqNum < squashedSeqNum[tid]) {
-        DPRINTF(WIB, "[tid:%i] Done squashing instructions.\n",
-                tid);
-
-        squashIt[tid] = instList[tid].end();
-
-        doneSquashing[tid] = true;
-        return;
-    }
-
-    bool wibTailUpdate = false;
-
-    unsigned int numInstsToSquash = squashWidth;
-
-    // If the CPU is exiting, squash all of the instructions
-    // it is told to, even if that exceeds the squashWidth.
-    // Set the number to the number of entries (the max).
-    if (cpu->isThreadExiting(tid))
-    {
-        numInstsToSquash = numEntries;
-    }
-
-    for (int numSquashed = 0;
-         numSquashed < numInstsToSquash &&
-         squashIt[tid] != instList[tid].end() &&
-         (*squashIt[tid])->seqNum > squashedSeqNum[tid];
-         ++numSquashed)
-    {
-        DPRINTF(WIB, "[tid:%i] Squashing instruction PC %s, seq num %i.\n",
-                (*squashIt[tid])->threadNumber,
-                (*squashIt[tid])->pcState(),
-                (*squashIt[tid])->seqNum);
-
-        // Mark the instruction as squashed, and ready to commit so that
-        // it can drain out of the pipeline.
-        (*squashIt[tid])->setSquashed();
-
-        // (*squashIt[tid])->setCanCommit();
-
-
-        if (squashIt[tid] == instList[tid].begin()) {
-            DPRINTF(WIB, "Reached head of instruction list while "
-                    "squashing.\n");
-
-            squashIt[tid] = instList[tid].end();
-
-            doneSquashing[tid] = true;
-
-            return;
-        }
-
-        InstIt tail_thread = instList[tid].end();
-        tail_thread--;
-
-        if ((*squashIt[tid]) == (*tail_thread))
-            robTailUpdate = true;
-
-        squashIt[tid]--;
-    }
-
-
-    // Check if ROB is done squashing.
-    if ((*squashIt[tid])->seqNum <= squashedSeqNum[tid]) {
-        DPRINTF(WIB, "[tid:%i] Done squashing instructions.\n",
-                tid);
-
-        squashIt[tid] = instList[tid].end();
-
-        doneSquashing[tid] = true;
-    }
-
-    if (robTailUpdate) {
-        updateTail();
+    doneSquashing = false;
+    if (numInstsInWIB != 0) {
+      doSquash(squash_num);
     }
 }
 
 void
-WIB::squash(InstSeqNum squash_num, ThreadID tid)
+WIB::retireHead()
 {
-    if (isEmpty(tid)) {
-        DPRINTF(WIB, "Does not need to squash due to being empty "
-                "[sn:%llu]\n",
-                squash_num);
-
-        return;
-    }
-    DPRINTF(WIB, "Starting to squash within the WIB.\n");
-
-    wibStatus[tid] = WIBSquashing;
-
-    doneSquashing[tid] = false;
-
-    squashedSeqNum[tid] = squash_num;
-
-    if (!instList[tid].empty()) {
-        InstIt tail_thread = instList[tid].end();
-        tail_thread--;
-
-        squashIt[tid] = tail_thread;
-
-        doSquash(tid);
-    }
-
-  //calls dosquash
-}
-
-void
-WIB::retireHead(ThreadID tid)
-{
-    // stats.writes++;
-
     assert(numInstsInWIB > 0);
 
-    // Get the head ROB instruction by copying it and remove it from the list
-    InstIt head_it = instList[tid].begin();
-
-    DynInstPtr head_inst = std::move(*head_it);
-    instList[tid].erase(head_it);
-
-    assert(head_inst->readyToCommit());
-
-    DPRINTF(WIB, "[tid:%i] Retiring head instruction, "
-            "instruction PC %s, [sn:%llu]\n", tid, head_inst->pcState(),
-            head_inst->seqNum);
+    // clear head and update head
+    instList[headInst] = nullptr;
+    headInst = (headInst + 1) % numEntries;
 
     --numInstsInWIB;
-    --threadEntries[tid];
-
-    head_inst->clearInROB();
-    head_inst->setCommitted();
-
-    //Update "Global" Head of WIB
-    updateHead();
-
-    // @todo: A special case is needed if the instruction being
-    // retired is the only instruction in the WIB; otherwise the tail
-    // iterator will become invalidated.
-
-    // since a cpu function assuming ROB call for this will take care of it
-    // cpu->removeFrontInst(head_inst);
-}
-
-void
-WIB::updateHead()
-{
-    InstSeqNum lowest_num = 0;
-    bool first_valid = true;
-
-    // @todo: set ActiveThreads through ROB or CPU
-    std::list<ThreadID>::iterator threads = activeThreads->begin();
-    std::list<ThreadID>::iterator end = activeThreads->end();
-
-    while (threads != end) {
-        ThreadID tid = *threads++;
-
-        if (instList[tid].empty())
-            continue;
-
-        if (first_valid) {
-            head = instList[tid].begin();
-            lowest_num = (*head)->seqNum;
-            first_valid = false;
-            continue;
-        }
-
-        InstIt head_thread = instList[tid].begin();
-
-        DynInstPtr head_inst = (*head_thread);
-
-        assert(head_inst != 0);
-
-        if (head_inst->seqNum < lowest_num) {
-            head = head_thread;
-            lowest_num = head_inst->seqNum;
-        }
-    }
-
-    if (first_valid) {
-        head = instList[0].end();
-    }
-
 }
 
 } // namespace o3

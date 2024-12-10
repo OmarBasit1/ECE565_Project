@@ -344,6 +344,8 @@ class Commit
   public:
     /** ROB interface. */
     ROB *rob;
+    
+    WIB *wib;
 
   private:
     /** Pointer to O3CPU. */

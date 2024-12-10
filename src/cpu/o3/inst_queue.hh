@@ -318,6 +318,8 @@ class InstructionQueue
     /** Function unit pool. */
     FUPool *fuPool;
 
+    WIB *wib;
+
     //////////////////////////////////////
     // Instruction lists, ready queues, and ordering
     //////////////////////////////////////

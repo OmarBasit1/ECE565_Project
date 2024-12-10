@@ -48,7 +48,6 @@
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/fu_pool.hh"
 #include "cpu/o3/limits.hh"
-#include "cpu/o3/wib.hh"
 #include "debug/IQ.hh"
 #include "enums/OpClass.hh"
 #include "inst_queue.hh"
@@ -840,9 +839,26 @@ InstructionQueue::scheduleReadyInsts()
             }
         }
 
+        bool pretendReady = false;
+        size_t colIdx = 0;
+        int8_t total_src_regs = issuing_inst->numSrcRegs();
+        for (int src_reg_idx = 0;
+             src_reg_idx < total_src_regs;
+             src_reg_idx++)
+        {
+            if (issuing_inst->renamedSrcIdx(src_reg_idx)->isWaitBit()) {
+                pretendReady = true;
+                colIdx = issuing_inst->renamedSrcIdx(src_reg_idx)->getWaitColumn();
+            }
+        }
+        // if instruction is pretend ready, move it to the WIB and dont issue to FU
+        if (pretendReady) {
+            wib->tagDependentInst(issuing_inst, colIdx);
+        }
+
         // If we have an instruction that doesn't require a FU, or a
         // valid FU, then schedule for execution.
-        if (idx != FUPool::NoFreeFU) {
+        else if (idx != FUPool::NoFreeFU) {
             if (op_latency == Cycles(1)) {
                 i2e_info->size++;
                 instsToExecute.push_back(issuing_inst);
@@ -1110,8 +1126,8 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
       miss_count++;
     //   std::cout << "misses: " << miss_count << std::endl;
       resched_inst->renamedDestIdx(0)->setWaitBit(true);
-      std::vector<bool>* columnPtr = wib->addColumn(resched_inst);
-      resched_inst->renamedDestReg(0)->setWaitColumn(columnPtr);
+      size_t columnIdx = wib->addColumn(resched_inst);
+      resched_inst->renamedDestIdx(0)->setWaitColumn(columnIdx);
     }
 
     resched_inst->clearCanIssue();
@@ -1211,7 +1227,8 @@ InstructionQueue::doSquash(ThreadID tid)
     DPRINTF(IQ, "[tid:%i] Squashing until sequence number %i!\n",
             tid, squashedSeqNum[tid]);
 
-    // TODO: WIB lookup for squashes
+    // WIB lookup for squashes
+    wib->squash((*squash_it)->seqNum);
 
     // Squash any instructions younger than the squashed sequence number
     // given.
