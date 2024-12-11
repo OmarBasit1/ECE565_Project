@@ -21,6 +21,7 @@ namespace o3
 {
 
 class CPU;
+class IEW;
 
 struct DerivO3CPUParams;
 
@@ -34,7 +35,7 @@ class WIB
     typedef typename std::list<DynInstPtr>::iterator InstIt;
 
   public:
-    WIB(CPU *_cpu, const BaseO3CPUParams &params);
+    WIB(CPU *_cpu, IEW *iew_ptr, const BaseO3CPUParams &params);
 
     std::string name() const;
 
@@ -98,6 +99,9 @@ class WIB
 
     /** Number of instructions in the WIB. */
     unsigned numEntries;
+
+    /** Pointer to IEW stage. */
+    IEW *iewStage;
 
     /** Number of instructions that can be squashed in a single cycle. */
     unsigned squashWidth;

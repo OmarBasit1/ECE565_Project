@@ -97,7 +97,7 @@ CPU::CPU(const BaseO3CPUParams &params)
       freeList(name() + ".freelist", &regFile),
 
       rob(this, params),
-      wib(this, params),
+      wib(this, &iew, params),
 
       scoreboard(name() + ".scoreboard", regFile.totalNumPhysRegs()),
 

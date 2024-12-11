@@ -13,8 +13,10 @@ namespace gem5
 namespace o3
 {
 
-WIB::WIB(CPU *_cpu, const BaseO3CPUParams &params)
+WIB::WIB(CPU *_cpu, IEW *iewStage,
+        const BaseO3CPUParams &params)
     : cpu(_cpu),
+      iewStage(iewStage),
       numEntries(params.numWIBEntries), //need to add to params
       squashWidth(1)
       // stats(_cpu)
@@ -88,6 +90,7 @@ WIB::addColumn(const DynInstPtr &inst)
 void
 WIB::removeColumn(const size_t colIdx)
 {
+    bool add_to_iq = false;
     // process the columns rows to send dependendent insts back to issue queue
     loadList[colIdx] = nullptr;
     for (auto& row : bitMatrix) {
@@ -95,7 +98,175 @@ WIB::removeColumn(const size_t colIdx)
             // TODO: send instruction at current row to be dispatched into IQ
             // instList[colIdx] is inst that needs dispatched
             // MAKE SURE TO CLEAR WAITBIT OF DEST REG WHEN SENT TO DISPATCH
-            row[colIdx] = false;
+            // Assuming all inst sent here are load insts
+            DynInstPtr inst = instList[colIdx];
+
+            // Make sure there's a valid instruction there.
+            assert(inst);
+
+            // Be sure to mark these instructions as ready so that the
+            // commit stage can go ahead and execute them, and mark
+            // them as issued so the IQ doesn't reprocess them.
+            
+            // FIXME: check for toRename
+            // Check for squashed instructions.
+            if (inst->isSquashed()) {
+                // DPRINTF(WIB, "WIB: Squashed instruction encountered, "
+                //         "not adding to IQ.\n");
+
+                // ++iewStats.dispSquashedInsts;
+
+                //Tell Rename That An Instruction has been processed
+                // if (inst->isLoad()) {
+                //     toRename->iewInfo[0].dispatchedToLQ++;
+                // }
+                // if (inst->isStore() || inst->isAtomic()) {
+                //     toRename->iewInfo[0].dispatchedToSQ++;
+                // }
+
+                // toRename->iewInfo[0].dispatched++;
+
+                continue;
+            }
+
+            if (iewStage->instQueue.isFull(0)) {
+                // Call function to start blocking.
+                // block(tid);
+
+                // Set unblock to false. Special case where we are using
+                // skidbuffer (unblocking) instructions but then we still
+                // get full in the IQ.
+                // toRename->iewUnblock[0] = false;
+
+                break;
+            }
+
+            if ((inst->isAtomic() && iewStage->ldstQueue.sqFull(0)) ||
+                (inst->isLoad() && iewStage->ldstQueue.lqFull(0)) ||
+                (inst->isStore() && iewStage->ldstQueue.sqFull(0))) {
+                // DPRINTF(WIB, "Issue: LSQ has become full.\n",
+                //         inst->isLoad() ? "LQ" : "SQ");
+
+                // Call function to start blocking.
+                // block(0);
+
+                // Set unblock to false. Special case where we are using
+                // skidbuffer (unblocking) instructions but then we still
+                // get full in the IQ.
+                // toRename->iewUnblock[0] = false;
+
+                break;
+            }
+
+            // hardware transactional memory
+            // CPU needs to track transactional state in program order.
+
+            // Otherwise issue the instruction just fine.
+            if (inst->isAtomic()) {
+                // DPRINTF(WIB, "WIB: Memory instruction "
+                //         "encountered, adding to LSQ.\n");
+
+                iewStage->ldstQueue.insertStore(inst);
+
+                // ++iewStats.dispStoreInsts;
+
+                // AMOs need to be set as "canCommit()"
+                // so that commit can process them when they reach the
+                // head of commit.
+                inst->setCanCommit();
+                iewStage->instQueue.insertNonSpec(inst);
+                add_to_iq = false;
+
+                // ++iewStats.dispNonSpecInsts;
+
+                // toRename->iewInfo[0].dispatchedToSQ++;
+
+            } else if (inst->isLoad()) {
+                // DPRINTF(WIB, "WIB: Memory instruction "
+                //         "encountered, adding to LSQ.\n");
+
+                // Reserve a spot in the load store queue for this
+                // memory access.
+                iewStage->ldstQueue.insertLoad(inst);
+
+                // ++iewStats.dispLoadInsts;
+
+                add_to_iq = true;
+
+                // toRename->iewInfo[0].dispatchedToLQ++;
+
+            } else if (inst->isStore()) {
+                // DPRINTF(WIB, "WIB: Memory instruction "
+                //         "encountered, adding to LSQ.\n");
+
+                iewStage->ldstQueue.insertStore(inst);
+
+                // ++iewStats.dispStoreInsts;
+
+                if (inst->isStoreConditional()) {
+                    // Store conditionals need to be set as "canCommit()"
+                    // so that commit can process them when they reach the
+                    // head of commit.
+                    // @todo: This is somewhat specific to Alpha.
+                    inst->setCanCommit();
+                    iewStage->instQueue.insertNonSpec(inst);
+                    add_to_iq = false;
+
+                    // ++iewStats.dispNonSpecInsts;
+                } else {
+                    add_to_iq = true;
+                }
+
+                // toRename->iewInfo[0].dispatchedToSQ++;
+
+            } else if (inst->isReadBarrier() || inst->isWriteBarrier()) {
+                // Same as non-speculative stores.
+                inst->setCanCommit();
+                iewStage->instQueue.insertBarrier(inst);
+                add_to_iq = false;
+
+            } else if (inst->isNop()) {
+                // DPRINTF(WIB, "WIB: Nop instruction encountered, "
+                //         "skipping.\n");
+
+                inst->setIssued();
+                inst->setExecuted();
+                inst->setCanCommit();
+
+                iewStage->instQueue.recordProducer(inst);
+
+                cpu->executeStats[0]->numNop++;
+
+                add_to_iq = false;
+            } else {
+                assert(!inst->isExecuted());
+                add_to_iq = true;
+            }
+
+            if (add_to_iq && inst->isNonSpeculative()) {
+                // DPRINTF(IEW, "WIB: Nonspeculative instruction "
+                //         "encountered, skipping.\n");
+
+                // Same as non-speculative stores.
+                inst->setCanCommit();
+
+                // Specifically insert it as nonspeculative.
+                iewStage->instQueue.insertNonSpec(inst);
+
+                // ++iewStats.dispNonSpecInsts;
+
+                add_to_iq = false;
+            }
+
+            // If the instruction queue is not full, then add the
+            // instruction.
+            if (add_to_iq) {
+                iewStage->instQueue.insert(inst);
+                inst->renamedDestIdx(0)->setWaitBit(false);
+                row[colIdx] = false;
+            }
+            // toRename->iewInfo[0].dispatched++;
+            // ++iewStats.dispatchedInsts;
         }
     }
 }
