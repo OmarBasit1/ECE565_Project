@@ -1,0 +1,934 @@
+(seq_io_init) pio init parameters: before nml read
+(seq_io_init)    pio_stride   =    -99
+(seq_io_init)    pio_root     =    -99
+(seq_io_init)    pio_typename = nothing                                                                         
+(seq_io_init)    pio_numtasks =    -99
+(seq_io_init)    pio_debug_level =      0
+    pio_async_interface =  F
+(seq_io_init) pio init parameters: after nml read
+(seq_io_init)    pio_stride   =    -99
+(seq_io_init)    pio_root     =    -99
+(seq_io_init)    pio_typename = nothing                                                                         
+(seq_io_init)    pio_numtasks =    -99
+(seq_io_init) pio init parameters: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+(seq_io_init)    pio_typename = NOTHING                                                                         
+(seq_io_init)    pio_numtasks =      1
+(seq_io_init)    pio_debug_level =      0
+    pio_async_interface =  F
+(seq_comm_setcomm)  initialize ID (  7 GLOBAL ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  1)
+(seq_comm_setcomm)  initialize ID (  2   ATM  ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  8)
+(seq_comm_setcomm)  initialize ID (  1   LND  ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  8)
+(seq_comm_setcomm)  initialize ID (  4   ICE  ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  8)
+(seq_comm_setcomm)  initialize ID (  5   GLC  ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  1)
+(seq_comm_setcomm)  initialize ID (  3   OCN  ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  8)
+(seq_comm_setcomm)  initialize ID (  6   CPL  ) pelist   =     0     0     1 ( npes =     1) ( nthreads =  8)
+(seq_comm_joincomm) initialize ID (  8 CPLATM ) join IDs =     6     2       ( npes =     1) ( nthreads =  8)
+(seq_comm_joincomm) initialize ID (  9 CPLLND ) join IDs =     6     1       ( npes =     1) ( nthreads =  8)
+(seq_comm_joincomm) initialize ID ( 10 CPLICE ) join IDs =     6     4       ( npes =     1) ( nthreads =  8)
+(seq_comm_joincomm) initialize ID ( 11 CPLOCN ) join IDs =     6     3       ( npes =     1) ( nthreads =  8)
+(seq_comm_joincomm) initialize ID ( 12 CPLGLC ) join IDs =     6     5       ( npes =     1) ( nthreads =  8)
+  
+ (seq_comm_printcomms) ID layout : global pes vs local pe for each ID
+     gpe        LND      ATM      OCN      ICE      GLC      CPL    GLOBAL   CPLATM   CPLLND   CPLICE   CPLOCN   CPLGLC    nthrds
+     ---      ------   ------   ------   ------   ------   ------   ------   ------   ------   ------   ------   ------    ------
+       0   :       0        0        0        0        0        0        0        0        0        0        0        0        8
+  
+(seq_io_init) pio init parameters for CPL: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+    pio iotype is netcdf
+(seq_io_init)    pio_iotype =      6
+(seq_io_init)    pio_numtasks =      1
+(seq_io_init) pio init parameters for ATM: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+    pio iotype is netcdf
+(seq_io_init)    pio_iotype =      6
+(seq_io_init)    pio_numtasks =      1
+(seq_io_init) pio init parameters for ICE: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+    pio iotype is netcdf
+(seq_io_init)    pio_iotype =      6
+(seq_io_init)    pio_numtasks =      1
+(seq_io_init) pio init parameters for OCN: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+    pio iotype is netcdf
+(seq_io_init)    pio_iotype =      6
+(seq_io_init)    pio_numtasks =      1
+(seq_io_init) pio init parameters for LND: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+    pio iotype is netcdf
+(seq_io_init)    pio_iotype =      6
+(seq_io_init)    pio_numtasks =      1
+(seq_io_init) pio init parameters for GLC: 
+(seq_io_init)    pio_stride   =      4
+(seq_io_init)    pio_root     =      0
+    pio iotype is netcdf
+(seq_io_init)    pio_iotype =      6
+(seq_io_init)    pio_numtasks =      1
+(seq_mct_drv) USE_ESMF_LIB is NOT set, using esmf_wrf_timemgr
+(seq_mct_drv) : ------------------------------------------------------------
+(seq_mct_drv) :      NCAR CPL7 Community Climate System Model (CCSM)  
+(seq_mct_drv) : ------------------------------------------------------------
+(seq_mct_drv) :      (Online documentation is available on the CCSM         
+(seq_mct_drv) :       Models page: http://www.ccsm.ucar.edu/models/         
+(seq_mct_drv) :       License information is available as a link from above 
+(seq_mct_drv) : ------------------------------------------------------------
+(seq_mct_drv) :                 DATE 09/09/01 TIME 01:46:40
+(seq_mct_drv) : ------------------------------------------------------------
+  
+  
+ (t_initf) Read in prof_inparm namelist from: drv_in
+8 MB memory   alloc in MB is             8.00
+8 MB memory dealloc in MB is             7.99
+Memory block size conversion in bytes is          4090.01
+(seq_drydep_read) Read in drydep_inparm namelist from: drv_flds_in
+ seq_drydep_read: drydep_method: xactive_lnd
+(seq_drydep_read) No dry deposition fields will be transfered
+(seq_infodata_Init) 
+ read seq_infodata_inparm namelist from: drv_in
+(shr_orb_params) Calculate characteristics of the orbit:
+(shr_orb_params) SVN $Id: shr_orb_mod.F90 28565 2011-05-20 19:24:42Z fischer $
+(shr_orb_params) Calculate orbit for year:      1990
+(shr_orb_params) ------ Computed Orbital Parameters ------
+(shr_orb_params) Eccentricity      =   1.670772E-02
+(shr_orb_params) Obliquity (deg)   =   2.344107E+01
+(shr_orb_params) Obliquity (rad)   =   4.091238E-01
+(shr_orb_params) Long of perh(deg) =   1.027242E+02
+(shr_orb_params) Long of perh(rad) =   4.934468E+00
+(shr_orb_params) Long at v.e.(rad) =  -3.250364E-02
+(shr_orb_params) -----------------------------------------
+  
+Status of infodata after seq_infodata_init
+(seq_infodata_print) Start type               = startup
+(seq_infodata_print) Case name                = camrun
+(seq_infodata_print) Case description         = 
+(seq_infodata_print) Model version            = unknown
+(seq_infodata_print) Username                 = unknown
+(seq_infodata_print) Hostname                 = unknown
+(seq_infodata_print) Timing Dir               = .
+(seq_infodata_print) Timing Checkpoint Dir    = .
+(seq_infodata_print) Restart case name        = 
+(seq_infodata_print) atm_ideal_phys           =   F
+(seq_infodata_print) atm adiabatic mode       =   F
+(seq_infodata_print) aqua_planet mode         =   T
+(seq_infodata_print) aqua_planet analytic sst =          1
+(seq_infodata_print) brnch_retain_casename    =   F
+(seq_infodata_print) read_restart flag        =   F
+(seq_infodata_print) Restart pointer file     = rpointer.drv
+(seq_infodata_print) Restart file (full path) = str_undefined
+(seq_infodata_print) single_column            =   F
+(seq_infodata_print) scmlat                   =   -999.00000000000    
+(seq_infodata_print) scmlon                   =   -999.00000000000    
+(seq_infodata_print) Log output end name      = .log
+(seq_infodata_print) Output path dir          = ./
+(seq_infodata_print) perpetual                =   T
+(seq_infodata_print) perpetual_ymd            =        321
+(seq_infodata_print) orb_mode                 = fixed_year
+(seq_infodata_print) orb_iyear                =       1990
+(seq_infodata_print) orb_eccen                =   0.16707719799281E-01
+(seq_infodata_print) orb_obliq                =    23.441068451147    
+(seq_infodata_print) orb_mvelp                =    102.72418532768    
+(seq_infodata_print) orb_obliqr               =   0.40912382465788    
+(seq_infodata_print) orb_mvelpp               =    4.9344679089867    
+(seq_infodata_print) orb_lambm0               =  -0.32503635878519E-01
+(seq_infodata_print) flux_epbal               = off
+(seq_infodata_print) flux_albav               =   F
+(seq_infodata_print) samegrid_ao              =   T
+(seq_infodata_print) samegrid_ro              =   F
+(seq_infodata_print) samegrid_al              =   T
+(seq_infodata_print) shr_map_dopole           =   T
+(seq_infodata_print) vect_map                 = npfix
+(seq_infodata_print) aoflux_grid              = ocn
+(seq_infodata_print) ocean_tight_coupling     =   T
+(seq_infodata_print) cpl_cdf64                =   T
+(seq_infodata_print) do_budgets               =   F
+(seq_infodata_print) do_histinit              =   F
+(seq_infodata_print) budget_inst              =    0
+(seq_infodata_print) budget_daily             =    0
+(seq_infodata_print) budget_month             =    1
+(seq_infodata_print) budget_ann               =    1
+(seq_infodata_print) budget_ltann             =    1
+(seq_infodata_print) budget_ltend             =    0
+(seq_infodata_print) histaux_a2x              =   F
+(seq_infodata_print) histaux_a2x3hr           =   F
+(seq_infodata_print) histaux_a2x3hrp          =   F
+(seq_infodata_print) histaux_a2x24hr          =   F
+(seq_infodata_print) histaux_l2x              =   F
+(seq_infodata_print) histaux_r2x              =   F
+(seq_infodata_print) drv_threading            =   F
+(seq_infodata_print) eps_frac                 =   0.10000000000000E-01
+(seq_infodata_print) eps_amask                =   0.10000000000000E-12
+(seq_infodata_print) eps_agrid                =   0.10000000000000E-11
+(seq_infodata_print) eps_aarea                =   0.90000000000000E-06
+(seq_infodata_print) eps_omask                =   0.10000000000000E-05
+(seq_infodata_print) eps_ogrid                =   0.10000000000000E-01
+(seq_infodata_print) eps_oarea                =   0.10000000000000    
+(seq_infodata_print) info_debug               =    1
+(seq_infodata_print) bfbflag                  =   F
+(seq_infodata_print) dead_comps               =   F
+(seq_infodata_print) run_barriers             =   F
+(seq_infodata_print) atm_present              =   T
+(seq_infodata_print) atm_prognostic           =   F
+(seq_infodata_print) lnd_present              =   F
+(seq_infodata_print) lnd_prognostic           =   F
+(seq_infodata_print) rof_present              =   F
+(seq_infodata_print) ocn_present              =   T
+(seq_infodata_print) ocn_prognostic           =   F
+(seq_infodata_print) ocnrof_prognostic        =   F
+(seq_infodata_print) ice_present              =   F
+(seq_infodata_print) ice_prognostic           =   F
+(seq_infodata_print) glc_present              =   F
+(seq_infodata_print) glc_prognostic           =   F
+(seq_infodata_print) sno_present              =   F
+(seq_infodata_print) sno_prognostic           =   F
+(seq_infodata_print) atm_nx                   =          0
+(seq_infodata_print) atm_ny                   =          0
+(seq_infodata_print) lnd_nx                   =          0
+(seq_infodata_print) lnd_ny                   =          0
+(seq_infodata_print) rof_nx                   =          0
+(seq_infodata_print) rof_ny                   =          0
+(seq_infodata_print) ice_nx                   =          0
+(seq_infodata_print) ice_ny                   =          0
+(seq_infodata_print) ocn_nx                   =          0
+(seq_infodata_print) ocn_ny                   =          0
+(seq_infodata_print) glc_nx                   =          0
+(seq_infodata_print) glc_ny                   =          0
+(seq_infodata_print) sno_nx                   =          0
+(seq_infodata_print) sno_ny                   =          0
+(seq_infodata_print) nextsw_cday              =   -1.0000000000000    
+(seq_infodata_print) precip_fact              =    1.0000000000000    
+(seq_infodata_print) atm_aero                 =   F
+(seq_infodata_print) atm_phase                =    1
+(seq_infodata_print) lnd_phase                =    1
+(seq_infodata_print) ocn_phase                =    1
+(seq_infodata_print) ice_phase                =    1
+(seq_infodata_print) glc_phase                =    1
+(seq_infodata_print) glcrun_alarm             =   F
+(seq_infodata_print) glc_g2supdate            =   F
+  
+(seq_timemgr_clockInit) Read in seq_timemgr_inparm namelist from: drv_in
+(seq_timemgr_clockInit) WARNING: overriding end_restart to false based on restart_option 
+ 
+(seq_timemgr_clockInit) Clock Init Settings:
+(seq_timemgr_clockInit) calendar       = NO_LEAP
+(seq_timemgr_clockInit) stop_option    = nsteps
+(seq_timemgr_clockInit) stop_n         =         90
+(seq_timemgr_clockInit) stop_ymd       =   99990101
+(seq_timemgr_clockInit) stop_tod       =          0
+(seq_timemgr_clockInit) restart_option = none
+(seq_timemgr_clockInit) restart_n      =         -1
+(seq_timemgr_clockInit) restart_ymd    =         -1
+(seq_timemgr_clockInit) end_restart    =   F
+(seq_timemgr_clockInit) history_option = never
+(seq_timemgr_clockInit) history_n      =         -1
+(seq_timemgr_clockInit) history_ymd    =         -1
+(seq_timemgr_clockInit) histavg_option = never
+(seq_timemgr_clockInit) histavg_n      =         -1
+(seq_timemgr_clockInit) histavg_ymd    =         -1
+(seq_timemgr_clockInit) tprof_option   = never
+(seq_timemgr_clockInit) tprof_n        =         -1
+(seq_timemgr_clockInit) tprof_ymd      =         -1
+(seq_timemgr_clockInit) start_ymd      =        101
+(seq_timemgr_clockInit) start_tod      =          0
+(seq_timemgr_clockInit) ref_ymd        =        101
+(seq_timemgr_clockInit) ref_tod        =          0
+(seq_timemgr_clockInit) atm_cpl_dt     =       1800
+(seq_timemgr_clockInit) lnd_cpl_dt     =       1800
+(seq_timemgr_clockInit) ice_cpl_dt     =       1800
+(seq_timemgr_clockInit) ocn_cpl_dt     =       1800
+(seq_timemgr_clockInit) glc_cpl_dt     =       1800
+(seq_timemgr_clockInit) atm_cpl_offset =          0
+(seq_timemgr_clockInit) lnd_cpl_offset =          0
+(seq_timemgr_clockInit) ice_cpl_offset =          0
+(seq_timemgr_clockInit) ocn_cpl_offset =          0
+(seq_timemgr_clockInit) glc_cpl_offset =          0
+ 
+(seq_timemgr_clockPrint) calendar      = NO_LEAP
+(seq_timemgr_clockPrint) end_restart   =   F
+
+(seq_timemgr_clockPrint) Clock = drv            1
+(seq_timemgr_clockPrint)   Start Time  = 00000101   00000
+(seq_timemgr_clockPrint)   Curr Time   = 00000101   00000
+(seq_timemgr_clockPrint)   Ref Time    = 00000101   00000
+(seq_timemgr_clockPrint)   Stop Time   = 00000102   75600
+(seq_timemgr_clockPrint)   Step number =        0
+(seq_timemgr_clockPrint)   Dtime       =     1800
+(seq_timemgr_clockPrint)   Alarm =  1  seq_timemgr_alarm_run
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  2  seq_timemgr_alarm_stop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000102   75600
+(seq_timemgr_clockPrint)     Intervl yms =        0       0      162000
+(seq_timemgr_clockPrint)   Alarm =  3  seq_timemgr_alarm_datestop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 99990101   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  4  seq_timemgr_alarm_restart
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  5  seq_timemgr_alarm_history
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  6  seq_timemgr_alarm_histavg
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  7  seq_timemgr_alarm_tprof
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  8  seq_timemgr_alarm_atmrun
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  9  seq_timemgr_alarm_lndrun
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm = 10  seq_timemgr_alarm_icerun
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm = 11  seq_timemgr_alarm_glcrun
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm = 12  seq_timemgr_alarm_ocnrun
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm = 13  seq_timemgr_alarm_ocnnext
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+ 
+(seq_timemgr_clockPrint) Clock = atm            2
+(seq_timemgr_clockPrint)   Start Time  = 00000101   00000
+(seq_timemgr_clockPrint)   Curr Time   = 00000101   00000
+(seq_timemgr_clockPrint)   Ref Time    = 00000101   00000
+(seq_timemgr_clockPrint)   Stop Time   = 00000102   75600
+(seq_timemgr_clockPrint)   Step number =        0
+(seq_timemgr_clockPrint)   Dtime       =     1800
+(seq_timemgr_clockPrint)   Alarm =  1  seq_timemgr_alarm_run
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  2  seq_timemgr_alarm_stop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000102   75600
+(seq_timemgr_clockPrint)     Intervl yms =        0       0      162000
+(seq_timemgr_clockPrint)   Alarm =  3  seq_timemgr_alarm_datestop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 99990101   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  4  seq_timemgr_alarm_restart
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  5  seq_timemgr_alarm_history
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  6  seq_timemgr_alarm_histavg
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  7  seq_timemgr_alarm_tprof
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+ 
+(seq_timemgr_clockPrint) Clock = lnd            3
+(seq_timemgr_clockPrint)   Start Time  = 00000101   00000
+(seq_timemgr_clockPrint)   Curr Time   = 00000101   00000
+(seq_timemgr_clockPrint)   Ref Time    = 00000101   00000
+(seq_timemgr_clockPrint)   Stop Time   = 00000102   75600
+(seq_timemgr_clockPrint)   Step number =        0
+(seq_timemgr_clockPrint)   Dtime       =     1800
+(seq_timemgr_clockPrint)   Alarm =  1  seq_timemgr_alarm_run
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  2  seq_timemgr_alarm_stop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000102   75600
+(seq_timemgr_clockPrint)     Intervl yms =        0       0      162000
+(seq_timemgr_clockPrint)   Alarm =  3  seq_timemgr_alarm_datestop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 99990101   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  4  seq_timemgr_alarm_restart
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  5  seq_timemgr_alarm_history
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  6  seq_timemgr_alarm_histavg
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  7  seq_timemgr_alarm_tprof
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+ 
+(seq_timemgr_clockPrint) Clock = ocn            4
+(seq_timemgr_clockPrint)   Start Time  = 00000101   00000
+(seq_timemgr_clockPrint)   Curr Time   = 00000101   00000
+(seq_timemgr_clockPrint)   Ref Time    = 00000101   00000
+(seq_timemgr_clockPrint)   Stop Time   = 00000102   75600
+(seq_timemgr_clockPrint)   Step number =        0
+(seq_timemgr_clockPrint)   Dtime       =     1800
+(seq_timemgr_clockPrint)   Alarm =  1  seq_timemgr_alarm_run
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  2  seq_timemgr_alarm_stop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000102   75600
+(seq_timemgr_clockPrint)     Intervl yms =        0       0      162000
+(seq_timemgr_clockPrint)   Alarm =  3  seq_timemgr_alarm_datestop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 99990101   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  4  seq_timemgr_alarm_restart
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  5  seq_timemgr_alarm_history
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  6  seq_timemgr_alarm_histavg
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  7  seq_timemgr_alarm_tprof
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+ 
+(seq_timemgr_clockPrint) Clock = ice            5
+(seq_timemgr_clockPrint)   Start Time  = 00000101   00000
+(seq_timemgr_clockPrint)   Curr Time   = 00000101   00000
+(seq_timemgr_clockPrint)   Ref Time    = 00000101   00000
+(seq_timemgr_clockPrint)   Stop Time   = 00000102   75600
+(seq_timemgr_clockPrint)   Step number =        0
+(seq_timemgr_clockPrint)   Dtime       =     1800
+(seq_timemgr_clockPrint)   Alarm =  1  seq_timemgr_alarm_run
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  2  seq_timemgr_alarm_stop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000102   75600
+(seq_timemgr_clockPrint)     Intervl yms =        0       0      162000
+(seq_timemgr_clockPrint)   Alarm =  3  seq_timemgr_alarm_datestop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 99990101   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  4  seq_timemgr_alarm_restart
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  5  seq_timemgr_alarm_history
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  6  seq_timemgr_alarm_histavg
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  7  seq_timemgr_alarm_tprof
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+ 
+(seq_timemgr_clockPrint) Clock = glc            6
+(seq_timemgr_clockPrint)   Start Time  = 00000101   00000
+(seq_timemgr_clockPrint)   Curr Time   = 00000101   00000
+(seq_timemgr_clockPrint)   Ref Time    = 00000101   00000
+(seq_timemgr_clockPrint)   Stop Time   = 00000102   75600
+(seq_timemgr_clockPrint)   Step number =        0
+(seq_timemgr_clockPrint)   Dtime       =     1800
+(seq_timemgr_clockPrint)   Alarm =  1  seq_timemgr_alarm_run
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000101   01800
+(seq_timemgr_clockPrint)     Intervl yms =        0       0        1800
+(seq_timemgr_clockPrint)   Alarm =  2  seq_timemgr_alarm_stop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 00000102   75600
+(seq_timemgr_clockPrint)     Intervl yms =        0       0      162000
+(seq_timemgr_clockPrint)   Alarm =  3  seq_timemgr_alarm_datestop
+(seq_timemgr_clockPrint)     Prev Time   = 00000101   00000
+(seq_timemgr_clockPrint)     Next Time   = 99990101   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  4  seq_timemgr_alarm_restart
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  5  seq_timemgr_alarm_history
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  6  seq_timemgr_alarm_histavg
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+(seq_timemgr_clockPrint)   Alarm =  7  seq_timemgr_alarm_tprof
+(seq_timemgr_clockPrint)     Prev Time   = 00001201   00000
+(seq_timemgr_clockPrint)     Next Time   = 99991201   00000
+(seq_timemgr_clockPrint)     Intervl yms =     9999       0           0
+ 
+  
+(seq_mct_drv) : Initialize each component: atm, lnd, ocn, and ice
+(seq_mct_drv) : Initialize atm component
+ CAM atmosphere model initialization
+ Read in cam_inparm namelist from: atm_in
+ REPRO_SUM_SETOPTS: Using fixed-point-based (scalable) reproducible distributed sum algorithm
+                     and not comparing with floating point algorithms.
+ radiation_setopts: *** NOTE: Extra overhead invoked putting a/e numbers on restart dataset. ***    To avoid, make mod(nhtfrq,iradae) = 0
+ cld_sediment_readnl: cldsed_ice_stokes_fac =   0.50000000000000000     
+ solar_data_readnl: solar_const (W/m2) =    1361.2700000000000     
+  ------------------------------------------
+      *** INPUT VARIABLES (CAM_INPARM) ***
+  ------------------------------------------
+          Initial run
+  ********** CASE = camrun **********
+                                                                                                                                                                                                                                                                 
+ Initial dataset is: cami_0000-01-01_1.9x2.5_L26_APE_c080203.nc
+ Topography dataset is: USGS-gtopo30_1.9x2.5_remap_c050602.nc
+ Time-invariant (absorption/emissivity) factor dataset is: abs_ems_factors_fastvx.c030508.nc
+ Run type flag (NSREST) 0=initial, 1=restart, 3=branch            0
+ Summary of restart module options:
+   Restart pointer file is: ./rpointer.atm
+ Initial conditions history files will be written yearly.
+Lowest level for dry adiabatic adjust (NLVDRY)         3
+ Frequency of Shortwave Radiation calc. (IRADSW)         2
+ Frequency of Longwave Radiation calc. (IRADLW)          2
+ Frequency of Absorptivity/Emissivity calc. (IRADAE)    24
+ Run model in "AQUA_PLANET" mode
+ pergro for cloud water is true
+  ********** Time Manager Configuration **********
+   Calendar type:            NO_LEAP
+   Timestep size (seconds):          1800
+   Start date (yr mon day tod):                0           1           1           0
+   Stop date (yr mon day tod):                 0           1           2       75600
+   Reference date (yr mon day tod):            0           1           1           0
+   Current step number:                 0
+   Current date (yr mon day tod):              0           1           1           0
+   Use perpetual diurnal cycle date (yr mon day):            0           3          21
+  ************************************************
+ Advected constituent list:
+   1  Q         Specific humidity                                                                                                                 wet
+   2  CLDLIQ    Grid box averaged cloud liquid amount                                                                                             wet
+   3  CLDICE    Grid box averaged cloud ice amount                                                                                                wet
+  Fields in physics buffer
+  name, scope, fdim, mdim, ldim
+ TEOUT           global                     1           1           1
+ DTCORE          global                     1          26           1
+ QCWAT           global                     1          26           1
+ LCWAT           global                     1          26           1
+ ICCWAT          global                     1          26           1
+ NLWAT           global                     1          26           1
+ NIWAT           global                     1          26           1
+ CC_T            global                     1          26           1
+ CC_qv           global                     1          26           1
+ CC_ql           global                     1          26           1
+ CC_qi           global                     1          26           1
+ CC_nl           global                     1          26           1
+ CC_ni           global                     1          26           1
+ CC_qlst         global                     1          26           1
+ TCWAT           global                     1          26           1
+ CLD             global                     1          26           1
+ CLDO            global                     1          26           1
+ AST             global                     1          26           1
+ AIST            global                     1          26           1
+ ALST            global                     1          26           1
+ QIST            global                     1          26           1
+ QLST            global                     1          26           1
+ CONCLD          global                     1          26           1
+ RHDFDA          global                     1          26           1
+ RHU00           global                     1          26           1
+ REL2            global                     1          26           1
+ REI2            global                     1          26           1
+ CONCLDQL        physpkg                    1          26           1
+ FICE            physpkg                    1          26           1
+ SH_FRAC         physpkg                    1          26           1
+ DP_FRAC         physpkg                    1          26           1
+ QINI            physpkg                    1          26           1
+ CLDLIQINI       physpkg                    1          26           1
+ CLDICEINI       physpkg                    1          26           1
+ TINI            physpkg                    1          26           1
+ QME             physpkg                    1          26           1
+ PRAIN           physpkg                    1          26           1
+ NEVAPR          physpkg                    1          26           1
+ WSEDL           physpkg                    1          26           1
+ REI             physpkg                    1          26           1
+ REL             physpkg                    1          26           1
+ REL_FN          physpkg                    1          26           1
+ DEI             physpkg                    1          26           1
+ MU              physpkg                    1          26           1
+ LAMBDAC         physpkg                    1          26           1
+ ICIWP           physpkg                    1          26           1
+ ICLWP           physpkg                    1          26           1
+ DEICONV         physpkg                    1          26           1
+ MUCONV          physpkg                    1          26           1
+ LAMBDACONV      physpkg                    1          26           1
+ ICIWPST         physpkg                    1          26           1
+ ICLWPST         physpkg                    1          26           1
+ ICIWPCONV       physpkg                    1          26           1
+ ICLWPCONV       physpkg                    1          26           1
+ DES             physpkg                    1          26           1
+ ICSWP           physpkg                    1          26           1
+ CLDFSNOW        physpkg                    1          26           1
+ LS_FLXPRC       physpkg                    1          27           1
+ LS_FLXSNW       physpkg                    1          27           1
+ SH_CLDLIQ1      physpkg                    1          26           1
+ SH_CLDICE1      physpkg                    1          26           1
+ ozone           physpkg                    1          26           1
+ sulf            physpkg                    1          26           1
+ bcar1           physpkg                    1          26           1
+ bcar2           physpkg                    1          26           1
+ ocar1           physpkg                    1          26           1
+ ocar2           physpkg                    1          26           1
+ sslt1           physpkg                    1          26           1
+ sslt2           physpkg                    1          26           1
+ sslt3           physpkg                    1          26           1
+ sslt4           physpkg                    1          26           1
+ dust1           physpkg                    1          26           1
+ dust2           physpkg                    1          26           1
+ dust3           physpkg                    1          26           1
+ dust4           physpkg                    1          26           1
+ SSLTA           physpkg                    1          26           1
+ SSLTC           physpkg                    1          26           1
+ N2O             physpkg                    1          26           1
+ CH4             physpkg                    1          26           1
+ CFC11           physpkg                    1          26           1
+ CFC12           physpkg                    1          26           1
+ CO2             physpkg                    1          26           1
+ O2              physpkg                    1          26           1
+ FRACIS          physpkg                    1          26           3
+ DP_FLXPRC       global                     1          27           1
+ DP_FLXSNW       global                     1          27           1
+ DP_CLDLIQ       global                     1          26           1
+ DP_CLDICE       global                     1          26           1
+ ICWMRDP         physpkg                    1          26           1
+ RPRDDP          physpkg                    1          26           1
+ NEVAPR_DPCU     physpkg                    1          26           1
+ ICWMRSH         physpkg                    1          26           1
+ RPRDSH          physpkg                    1          26           1
+ RPRDTOT         physpkg                    1          26           1
+ CLDTOP          physpkg                    1           1           1
+ CLDBOT          physpkg                    1           1           1
+ cush            global                     1           1           1
+ NEVAPR_SHCU     physpkg                    1          26           1
+ SH_FLXPRC       physpkg                    1          27           1
+ SH_FLXSNW       physpkg                    1          27           1
+ SH_CLDLIQ       physpkg                    1          26           1
+ SH_CLDICE       physpkg                    1          26           1
+ QRS             global                     1          26           1
+ QRL             global                     1          26           1
+ tke             global                     1          27           1
+ kvh             global                     1          27           1
+ kvm             global                     1          27           1
+ turbtype        global                     1          27           1
+ smaw            global                     1          27           1
+ tauresx         global                     1           1           1
+ tauresy         global                     1           1           1
+ wgustd          global                     1           1           1
+ kvt             global                     1          27           1
+ T_TTEND         global                     1          26           1
+ (GETFIL): attempting to find local file cami_0000-01-01_1.9x2.5_L26_APE_c080203.nc
+ (GETFIL): using cami_0000-01-01_1.9x2.5_L26_APE_c080203.nc in current working directory
+ Opened existing file cami_0000-01-01_1.9x2.5_L26_APE_c080203.nc           3
+ (GETFIL): attempting to find local file USGS-gtopo30_1.9x2.5_remap_c050602.nc
+ (GETFIL): using USGS-gtopo30_1.9x2.5_remap_c050602.nc in current working directory
+ Opened existing file USGS-gtopo30_1.9x2.5_remap_c050602.nc           4
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           1   3.5643997134965496E-004   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           2   1.9700259342934194        1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           3   2.0130972135758818E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           4   8.0754581776319983E-003   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           5   2.9732613022209909E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           6   2.5466975440391868E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           7   1.4101364787739086E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           8   1.4062745454171242E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=           8   1.9699540608049315        1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=           9   8.9343418481711845E-003   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=           9   1.6237053474197610E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          10   1.7596662370964245E-005   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=          10   1.9412015150085594E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          11   1.5625101907750575E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=          11   8.7662849813628513E-003   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          12   2.4915327503031704E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=          12   9.7832068914761039E-003   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          13   1.2064850037575474E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=          13   2.5071874879571989E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          14   2.1447357170159085E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=          14   2.8978619603300611E-002   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          15   9.1441854566265898E-003   1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,atest,eps=          16  0.64196262096514056        1.0000000000000001E-005
+HYCOEF: A and/or B vertical level coefficients at full
+ levels are not the arithmetic mean of half-level values
+ k,btest,eps=          16  0.54916445958763993        1.0000000000000001E-005
+ Layer Locations (*1000) 
+   1    2.1969              0.0000              2.1969
+                  3.5448              0.0000              3.5448
+   2    4.8952              0.0000              4.8952
+                  7.3891              0.0000              7.3891
+   3 1952.4498              0.0000           1952.4498
+               2000.0000              0.0000           2000.0000
+   4 1967.8287              0.0000           1967.8287
+               2000.0000              0.0000           2000.0000
+   5 1999.9993              0.0000           1999.9993
+               1941.4055              0.0000           1941.4055
+   6 2000.0000              0.0000           2000.0000
+               1949.7065              0.0000           1949.7065
+   7 2000.0000              0.0000           2000.0000
+               1999.8527              0.0000           1999.8527
+   8 1943.6989              0.0000           1943.6989
+               1999.7749              7.5676           2007.3425
+   9 1999.9991           1999.7940           3999.7931
+               1999.9994           1967.5922           3967.5916
+  10 1964.4213           1999.8093           3964.2305
+               1951.1719           1944.3352           3895.5071
+  11 1937.8538           1965.0879           3902.9417
+               1999.8631           2000.0000           3999.8631
+  12 1999.8608           2000.0000           3999.8608
+               1950.7142           2000.0000           3950.7142
+  13 1999.9991           1961.0577           3961.0568
+               1999.8121           1999.7724           3999.5845
+  14 1951.6596           1939.4525           3891.1121
+               1999.8571           2000.0000           3999.8571
+  15 1963.1815           1946.2885           3909.4700
+               1999.7940           1946.5323           3946.3263
+  16 2000.0000           1946.7773           3946.7773
+               1999.8612           1958.8566           3958.7177
+  17   55.9611            282.9562            338.9173
+                 53.3717            315.4463            368.8180
+  18   50.7823            347.9364            398.7187
+                 47.7359            386.1593            433.8952
+  19   44.6896            424.3822            469.0718
+                 41.1058            469.3495            510.4553
+  20   37.5219            514.3168            551.8387
+                 33.3057            567.2185            600.5242
+  21   29.0895            620.1202            649.2097
+                 24.9684            671.8279            696.7963
+  22   20.8474            723.5355            744.3829
+                 17.0959            770.6062            787.7021
+  23   13.3444            817.6768            831.0212
+                 10.2147            856.9461            867.1608
+  24    7.0850            896.2153            903.3003
+                  4.8032            924.8457            929.6489
+  25    2.5214            953.4761            955.9975
+                  1.2607            969.2942            970.5548
+  26    0.0000            985.1122            985.1122
+                  0.0000            992.5561            992.5561
+  27    0.0000           1000.0000           1000.0000
+ reference pressures (Pa)
+   1       219.6928
+                          354.4806       269.8282
+   2       489.5210
+                          738.9069    194755.4588
+   3    195244.9799
+                       200000.0000      1537.8949
+   4    196782.8748
+                       199999.9997      3217.0567
+   5    199999.9315
+                       194140.5520         0.0685
+   6    200000.0000
+                       194970.6461         0.0000
+   7    200000.0000
+                       199985.2650     -5630.1120
+   8    194369.8880
+                       200734.2503    205609.4203
+   9    399979.3083
+                       396759.1625     -3556.2551
+  10    396423.0532
+                       389550.7057     -6128.8831
+  11    390294.1701
+                       399986.3119      9691.9060
+  12    399986.0761
+                       395071.4157     -3880.3953
+  13    396105.6808
+                       399958.4508     -6994.4714
+  14    389111.2094
+                       399985.7106      1835.7932
+  15    390947.0026
+                       394632.6274      3730.7315
+  16    394677.7341
+                       395871.7738   -360786.0031
+  17     33891.7310
+                        36881.7980      5980.1340
+  18     39871.8650
+                        43389.5225      7035.3150
+  19     46907.1800
+                        51045.5255      8276.6910
+  20     55183.8710
+                        60052.4200      9737.0980
+  21     64920.9690
+                        69679.6290      9517.3200
+  22     74438.2890
+                        78770.2060      8663.8340
+  23     83102.1230
+                        86716.0760      7227.9060
+  24     90330.0290
+                        92964.8875      5269.7170
+  25     95599.7460
+                        97055.4830      2911.4740
+  26     98511.2200
+                        99255.6100      1488.7800
+  27    100000.0000
+ Read in dyn_fv_inparm namelist from: atm_in
+ initcom: lat, clat, w            1  -1.5707963267948966        1.3669500753099584E-004
+ initcom: lat, clat, w            2  -1.5377269304413197        1.0933358441641561E-003
+ initcom: lat, clat, w            3  -1.5046575340877433        2.1854761416350010E-003
+ initcom: lat, clat, w            4  -1.4715881377341662        3.2752266530317042E-003
+ initcom: lat, clat, w            5  -1.4385187413805893        4.3613957521696500E-003
+ initcom: lat, clat, w            6  -1.4054493450270127        5.4427957290861251E-003
+ initcom: lat, clat, w            7  -1.3723799486734360        6.5182440887829873E-003
+ initcom: lat, clat, w            8  -1.3393105523198594        7.5865648442688949E-003
+ initcom: lat, clat, w            9  -1.3062411559662823        8.6465898024823407E-003
+ initcom: lat, clat, w           10  -1.2731717596127057        9.6971598416946136E-003
+ initcom: lat, clat, w           11  -1.2401023632591288        1.0737126178992251E-002
+ initcom: lat, clat, w           12  -1.2070329669055522        1.1765351626454090E-002
+ initcom: lat, clat, w           13  -1.1739635705519755        1.2780711834649683E-002
+ initcom: lat, clat, w           14  -1.1408941741983984        1.3782096522098608E-002
+ initcom: lat, clat, w           15  -1.1078247778448218        1.4768410689347089E-002
+ initcom: lat, clat, w           16  -1.0747553814912449        1.5738575816334643E-002
+ initcom: lat, clat, w           17  -1.0416859851376683        1.6691531041738150E-002
+ initcom: lat, clat, w           18  -1.0086165887840914        1.7626234323010470E-002
+ initcom: lat, clat, w           19 -0.97554719243051469        1.8541663575836087E-002
+ initcom: lat, clat, w           20 -0.94247779607693793        1.9436817791767758E-002
+ initcom: lat, clat, w           21 -0.90940839972336118        2.0310718132812267E-002
+ initcom: lat, clat, w           22 -0.87633900336978443        2.1162409001777793E-002
+ initcom: lat, clat, w           23 -0.84326960701620757        2.1990959087203055E-002
+ initcom: lat, clat, w           24 -0.81020021066263093        2.2795462381734466E-002
+ initcom: lat, clat, w           25 -0.77713081430905406        2.3575039172831214E-002
+ initcom: lat, clat, w           26 -0.74406141795547742        2.4328837004717663E-002
+ initcom: lat, clat, w           27 -0.71099202160190056        2.5056031610531826E-002
+ initcom: lat, clat, w           28 -0.67792262524832381        2.5755827813648602E-002
+ initcom: lat, clat, w           29 -0.64485322889474717        2.6427460397194569E-002
+ initcom: lat, clat, w           30 -0.61178383254117030        2.7070194940800429E-002
+ initcom: lat, clat, w           31 -0.57871443618759355        2.7683328623679060E-002
+ initcom: lat, clat, w           32 -0.54564503983401669        2.8266190993150087E-002
+ initcom: lat, clat, w           33 -0.51257564348043994        2.8818144697770109E-002
+ initcom: lat, clat, w           34 -0.47950624712686324        2.9338586184266990E-002
+ initcom: lat, clat, w           35 -0.44643685077328643        2.9826946357516093E-002
+ initcom: lat, clat, w           36 -0.41336745441970973        3.0282691202838108E-002
+ initcom: lat, clat, w           37 -0.38029805806613298        3.0705322369935895E-002
+ initcom: lat, clat, w           38 -0.34722866171255601        3.1094377717833077E-002
+ initcom: lat, clat, w           39 -0.31415926535897931        3.1449431820218587E-002
+ initcom: lat, clat, w           40 -0.28108986900540261        3.1770096430644990E-002
+ initcom: lat, clat, w           41 -0.24802047265182586        3.2056020907068133E-002
+ initcom: lat, clat, w           42 -0.21495107629824917        3.2306892595271308E-002
+ initcom: lat, clat, w           43 -0.18188167994467216        3.2522437170746515E-002
+ initcom: lat, clat, w           44 -0.14881228359109547        3.2702418938664934E-002
+ initcom: lat, clat, w           45 -0.11574288723751877        3.2846641091606149E-002
+ initcom: lat, clat, w           46  -8.2673490883942033E-002   3.2954945924763210E-002
+ initcom: lat, clat, w           47  -4.9604094530365322E-002   3.3027215008391286E-002
+ initcom: lat, clat, w           48  -1.6534698176788359E-002   3.3063369317308286E-002
+ initcom: lat, clat, w           49   1.6534698176788359E-002   3.3063369317308161E-002
+ initcom: lat, clat, w           50   4.9604094530365080E-002   3.3027215008391175E-002
+ initcom: lat, clat, w           51   8.2673490883941797E-002   3.2954945924763196E-002
+ initcom: lat, clat, w           52  0.11574288723751851        3.2846641091606260E-002
+ initcom: lat, clat, w           53  0.14881228359109547        3.2702418938665073E-002
+ initcom: lat, clat, w           54  0.18188167994467216        3.2522437170746377E-002
+ initcom: lat, clat, w           55  0.21495107629824892        3.2306892595271225E-002
+ initcom: lat, clat, w           56  0.24802047265182561        3.2056020907068078E-002
+ initcom: lat, clat, w           57  0.28108986900540234        3.1770096430645101E-002
+ initcom: lat, clat, w           58  0.31415926535897931        3.1449431820218754E-002
+ initcom: lat, clat, w           59  0.34722866171255601        3.1094377717832966E-002
+ initcom: lat, clat, w           60  0.38029805806613276        3.0705322369935728E-002
+ initcom: lat, clat, w           61  0.41336745441970940        3.0282691202838108E-002
+ initcom: lat, clat, w           62  0.44643685077328615        2.9826946357516204E-002
+ initcom: lat, clat, w           63  0.47950624712686313        2.9338586184267101E-002
+ initcom: lat, clat, w           64  0.51257564348043994        2.8818144697770165E-002
+ initcom: lat, clat, w           65  0.54564503983401658        2.8266190993149864E-002
+ initcom: lat, clat, w           66  0.57871443618759333        2.7683328623679060E-002
+ initcom: lat, clat, w           67  0.61178383254117008        2.7070194940800429E-002
+ initcom: lat, clat, w           68  0.64485322889474694        2.6427460397194680E-002
+ initcom: lat, clat, w           69  0.67792262524832370        2.5755827813648713E-002
+ initcom: lat, clat, w           70  0.71099202160190045        2.5056031610531715E-002
+ initcom: lat, clat, w           71  0.74406141795547709        2.4328837004717552E-002
+ initcom: lat, clat, w           72  0.77713081430905373        2.3575039172831103E-002
+ initcom: lat, clat, w           73  0.81020021066263059        2.2795462381734577E-002
+ initcom: lat, clat, w           74  0.84326960701620723        2.1990959087203277E-002
+ initcom: lat, clat, w           75  0.87633900336978454        2.1162409001777793E-002
+ initcom: lat, clat, w           76  0.90940839972336118        2.0310718132812267E-002
+ initcom: lat, clat, w           77  0.94247779607693793        1.9436817791767758E-002
+ initcom: lat, clat, w           78  0.97554719243051469        1.8541663575836087E-002
+ initcom: lat, clat, w           79   1.0086165887840914        1.7626234323010359E-002
+ initcom: lat, clat, w           80   1.0416859851376681        1.6691531041738261E-002
+ initcom: lat, clat, w           81   1.0747553814912449        1.5738575816334643E-002
+ initcom: lat, clat, w           82   1.1078247778448216        1.4768410689346978E-002
+ initcom: lat, clat, w           83   1.1408941741983982        1.3782096522098497E-002
+ initcom: lat, clat, w           84   1.1739635705519751        1.2780711834649683E-002
+ initcom: lat, clat, w           85   1.2070329669055522        1.1765351626454312E-002
+ initcom: lat, clat, w           86   1.2401023632591288        1.0737126178992251E-002
+ initcom: lat, clat, w           87   1.2731717596127057        9.6971598416946136E-003
+ initcom: lat, clat, w           88   1.3062411559662823        8.6465898024822296E-003
+ initcom: lat, clat, w           89   1.3393105523198590        7.5865648442688949E-003
+ initcom: lat, clat, w           90   1.3723799486734358        6.5182440887830984E-003
+ initcom: lat, clat, w           91   1.4054493450270125        5.4427957290860141E-003
+ initcom: lat, clat, w           92   1.4385187413805893        4.3613957521697611E-003
+ initcom: lat, clat, w           93   1.4715881377341657        3.2752266530317042E-003
+ initcom: lat, clat, w           94   1.5046575340877426        2.1854761416348900E-003
