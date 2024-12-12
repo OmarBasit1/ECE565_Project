@@ -846,11 +846,12 @@ IEW::dispatch(ThreadID tid)
 void
 IEW::dispatchInsts(ThreadID tid)
 {
+
     // Obtain instructions from skid buffer if unblocking, or queue from rename
     // otherwise.
     std::queue<DynInstPtr> &insts_to_dispatch =
-        dispatchStatus[tid] == Unblocking ?
-        skidBuffer[tid] : insts[tid];
+        !wib->isBufferEmpty() ? wib->getWIBBuffer() : 
+        (dispatchStatus[tid] == Unblocking ? skidBuffer[tid] : insts[tid]);
 
     int insts_to_add = insts_to_dispatch.size();
 

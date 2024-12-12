@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <queue>
 
 #include "base/statistics.hh"
 #include "base/types.hh"
@@ -168,6 +169,17 @@ class WIB
     
     // tag pretend ready instructions in WIB instead of issueing
     void tagDependentInst(const DynInstPtr &inst, const size_t colIdx);
+
+  private:
+    /** Queue of instructions coming from WIB to be dispatched. */
+    std::queue<DynInstPtr> wibBuffer;
+  public:
+    /** Inserts instructions to be dispatched from the WIB. */
+    void wibInsert(const DynInstPtr &inst);
+
+    std::queue<DynInstPtr>& getWIBBuffer() { return wibBuffer; }
+    
+    bool isBufferEmpty() { return wibBuffer.empty(); }
 
 };
 

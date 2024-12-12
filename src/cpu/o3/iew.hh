@@ -200,7 +200,7 @@ class IEW
 
     /** Returns if all of the skid buffers are empty. */
     bool skidsEmpty();
-
+    
     /** Updates overall IEW status based on all of the stages' statuses. */
     void updateStatus();
 

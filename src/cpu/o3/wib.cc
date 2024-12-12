@@ -1,6 +1,7 @@
 #include "cpu/o3/wib.hh"
 
 #include <list>
+#include <queue>
 
 #include "base/logging.hh"
 #include "cpu/o3/dyn_inst.hh"
@@ -62,6 +63,12 @@ WIB::name() const
     return cpu->name() + ".wib";
 }
 
+void
+WIB::wibInsert(const DynInstPtr &inst)
+{
+    wibBuffer.push(inst);
+}
+
 size_t
 WIB::addColumn(const DynInstPtr &inst)
 {
@@ -95,153 +102,16 @@ WIB::removeColumn(const size_t colIdx)
     loadList[colIdx] = nullptr;
     for (auto& row : bitMatrix) {
         if (row[colIdx]) {
-            // TODO: send instruction at current row to be dispatched into IQ
-            // instList[colIdx] is inst that needs dispatched
-            // MAKE SURE TO CLEAR WAITBIT OF DEST REG WHEN SENT TO DISPATCH
+            // send instruction at current row to be dispatched into IQ
             // Assuming all inst sent here are load insts
             DynInstPtr inst = instList[colIdx];
 
             // Make sure there's a valid instruction there.
             assert(inst);
 
-            // Be sure to mark these instructions as ready so that the
-            // commit stage can go ahead and execute them, and mark
-            // them as issued so the IQ doesn't reprocess them.
-            
-            // FIXME: check for toRename
-            // Check for squashed instructions.
-            if (inst->isSquashed()) {
-                // ++iewStats.dispSquashedInsts;
-
-                //Tell Rename That An Instruction has been processed
-                // if (inst->isLoad()) {
-                //     toRename->iewInfo[0].dispatchedToLQ++;
-                // }
-                // if (inst->isStore() || inst->isAtomic()) {
-                //     toRename->iewInfo[0].dispatchedToSQ++;
-                // }
-
-                // toRename->iewInfo[0].dispatched++;
-
-                continue;
-            }
-
-            if (iewStage->instQueue.isFull(0)) {
-                // Call function to start blocking.
-                // block(tid);
-
-                // Set unblock to false. Special case where we are using
-                // skidbuffer (unblocking) instructions but then we still
-                // get full in the IQ.
-                // toRename->iewUnblock[0] = false;
-
-                break;
-            }
-
-            if ((inst->isAtomic() && iewStage->ldstQueue.sqFull(0)) ||
-                (inst->isLoad() && iewStage->ldstQueue.lqFull(0)) ||
-                (inst->isStore() && iewStage->ldstQueue.sqFull(0))) {
-                // Call function to start blocking.
-                // block(0);
-
-                // Set unblock to false. Special case where we are using
-                // skidbuffer (unblocking) instructions but then we still
-                // get full in the IQ.
-                // toRename->iewUnblock[0] = false;
-
-                break;
-            }
-
-            if (inst->isAtomic()) {
-                iewStage->ldstQueue.insertStore(inst);
-
-                // ++iewStats.dispStoreInsts;
-
-                // AMOs need to be set as "canCommit()"
-                // so that commit can process them when they reach the
-                // head of commit.
-                inst->setCanCommit();
-                iewStage->instQueue.insertNonSpec(inst);
-                add_to_iq = false;
-
-                // ++iewStats.dispNonSpecInsts;
-
-                // toRename->iewInfo[0].dispatchedToSQ++;
-
-            } else if (inst->isLoad()) {
-                // Reserve a spot in the load store queue for this
-                // memory access.
-                iewStage->ldstQueue.insertLoad(inst);
-
-                // ++iewStats.dispLoadInsts;
-
-                add_to_iq = true;
-
-                // toRename->iewInfo[0].dispatchedToLQ++;
-
-            } else if (inst->isStore()) {
-                iewStage->ldstQueue.insertStore(inst);
-
-                // ++iewStats.dispStoreInsts;
-
-                if (inst->isStoreConditional()) {
-                    // Store conditionals need to be set as "canCommit()"
-                    // so that commit can process them when they reach the
-                    // head of commit.
-                    // @todo: This is somewhat specific to Alpha.
-                    inst->setCanCommit();
-                    iewStage->instQueue.insertNonSpec(inst);
-                    add_to_iq = false;
-
-                    // ++iewStats.dispNonSpecInsts;
-                } else {
-                    add_to_iq = true;
-                }
-
-                // toRename->iewInfo[0].dispatchedToSQ++;
-
-            } else if (inst->isReadBarrier() || inst->isWriteBarrier()) {
-                // Same as non-speculative stores.
-                inst->setCanCommit();
-                iewStage->instQueue.insertBarrier(inst);
-                add_to_iq = false;
-
-            } else if (inst->isNop()) {
-                inst->setIssued();
-                inst->setExecuted();
-                inst->setCanCommit();
-
-                iewStage->instQueue.recordProducer(inst);
-
-                cpu->executeStats[0]->numNop++;
-
-                add_to_iq = false;
-            } else {
-                assert(!inst->isExecuted());
-                add_to_iq = true;
-            }
-
-            if (add_to_iq && inst->isNonSpeculative()) {
-                // Same as non-speculative stores.
-                inst->setCanCommit();
-
-                // Specifically insert it as nonspeculative.
-                iewStage->instQueue.insertNonSpec(inst);
-
-                // ++iewStats.dispNonSpecInsts;
-
-                add_to_iq = false;
-            }
-
-            // If the instruction queue is not full, then add the
-            // instruction.
-            if (add_to_iq) {
-                iewStage->instQueue.insert(inst);
-                inst->renamedDestIdx(0)->setWaitBit(false);
-                row[colIdx] = false;
-            }
-            // toRename->iewInfo[0].dispatched++;
-            // ++iewStats.dispatchedInsts;
+            // clear the waitBit of this instruction
+            inst->renamedDestIdx(0)->setWaitBit(false);
+            wibInsert(inst);
         }
     }
 }
