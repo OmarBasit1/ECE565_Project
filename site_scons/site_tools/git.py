@@ -74,6 +74,7 @@ def install_style_hooks(env):
     if hook_exists("pre-commit") and hook_exists("commit-msg"):
         return
 
+    return
     print(git_style_message, end=" ")
     if SCons.Script.GetOption("install_hooks"):
         print("Installing revision control hooks automatically.")

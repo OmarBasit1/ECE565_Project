@@ -35,9 +35,9 @@ WIB::WIB(CPU *_cpu, IEW *iewStage,
     }
 
     // set size to rows: numLoads, columns: numEntries
-    bitMatrix.resize(numLoads);
+    bitMatrix.resize(numEntries);
     for (auto& row : bitMatrix) {
-        row.resize(numEntries, false); // Initialize new bits to false
+        row.resize(numLoads, false); // Initialize new bits to false
     }
 
     resetState();
@@ -70,17 +70,17 @@ WIB::addColumn(const DynInstPtr &inst)
     size_t colIdx = 0;
 
     for (int i = 0; i < numLoads; i++) {
-      if (!loadList[i]) {
-        colIdx = i;
-        loadList[colIdx] = inst;
-        inst->renamedDestIdx(0)->setWaitColumn(colIdx);
-        break;
-      }
+        if (!loadList[i]) {
+            colIdx = i;
+            loadList[colIdx] = inst;
+            inst->renamedDestIdx(0)->setWaitColumn(colIdx);
+            break;
+        }
     }
 
     // reset column
     for (auto& row: bitMatrix) {
-      row[colIdx] = false;
+        row[colIdx] = false;
     }
     
     // return the new column idx for the dependent instructions
@@ -111,9 +111,6 @@ WIB::removeColumn(const size_t colIdx)
             // FIXME: check for toRename
             // Check for squashed instructions.
             if (inst->isSquashed()) {
-                // DPRINTF(WIB, "WIB: Squashed instruction encountered, "
-                //         "not adding to IQ.\n");
-
                 // ++iewStats.dispSquashedInsts;
 
                 //Tell Rename That An Instruction has been processed
@@ -144,9 +141,6 @@ WIB::removeColumn(const size_t colIdx)
             if ((inst->isAtomic() && iewStage->ldstQueue.sqFull(0)) ||
                 (inst->isLoad() && iewStage->ldstQueue.lqFull(0)) ||
                 (inst->isStore() && iewStage->ldstQueue.sqFull(0))) {
-                // DPRINTF(WIB, "Issue: LSQ has become full.\n",
-                //         inst->isLoad() ? "LQ" : "SQ");
-
                 // Call function to start blocking.
                 // block(0);
 
@@ -158,14 +152,7 @@ WIB::removeColumn(const size_t colIdx)
                 break;
             }
 
-            // hardware transactional memory
-            // CPU needs to track transactional state in program order.
-
-            // Otherwise issue the instruction just fine.
             if (inst->isAtomic()) {
-                // DPRINTF(WIB, "WIB: Memory instruction "
-                //         "encountered, adding to LSQ.\n");
-
                 iewStage->ldstQueue.insertStore(inst);
 
                 // ++iewStats.dispStoreInsts;
@@ -182,9 +169,6 @@ WIB::removeColumn(const size_t colIdx)
                 // toRename->iewInfo[0].dispatchedToSQ++;
 
             } else if (inst->isLoad()) {
-                // DPRINTF(WIB, "WIB: Memory instruction "
-                //         "encountered, adding to LSQ.\n");
-
                 // Reserve a spot in the load store queue for this
                 // memory access.
                 iewStage->ldstQueue.insertLoad(inst);
@@ -196,9 +180,6 @@ WIB::removeColumn(const size_t colIdx)
                 // toRename->iewInfo[0].dispatchedToLQ++;
 
             } else if (inst->isStore()) {
-                // DPRINTF(WIB, "WIB: Memory instruction "
-                //         "encountered, adding to LSQ.\n");
-
                 iewStage->ldstQueue.insertStore(inst);
 
                 // ++iewStats.dispStoreInsts;
@@ -226,9 +207,6 @@ WIB::removeColumn(const size_t colIdx)
                 add_to_iq = false;
 
             } else if (inst->isNop()) {
-                // DPRINTF(WIB, "WIB: Nop instruction encountered, "
-                //         "skipping.\n");
-
                 inst->setIssued();
                 inst->setExecuted();
                 inst->setCanCommit();
@@ -244,9 +222,6 @@ WIB::removeColumn(const size_t colIdx)
             }
 
             if (add_to_iq && inst->isNonSpeculative()) {
-                // DPRINTF(IEW, "WIB: Nonspeculative instruction "
-                //         "encountered, skipping.\n");
-
                 // Same as non-speculative stores.
                 inst->setCanCommit();
 
@@ -274,6 +249,7 @@ WIB::removeColumn(const size_t colIdx)
 void
 WIB::squashColumn(const size_t colIdx)
 {
+    // colIdx -> entryIdx
     loadList[colIdx] = nullptr;
     for (auto& row : bitMatrix) {
         row[colIdx] = false;
@@ -283,6 +259,22 @@ WIB::squashColumn(const size_t colIdx)
 void
 WIB::squashRow(const size_t rowIdx)
 {
+    // rowIdx -> loadIdx
+    DynInstPtr inst = instList[rowIdx];
+
+    // load instruction with a waitBit dest reg getting squashed
+    if (inst->isLoad() && inst->renamedDestIdx(0)->isWaitBit()) {
+        // Update our WIB to set only the loadList to nullptr at
+        // the index of the load getting squashed
+        for (int colIdx = 0; colIdx < numEntries; colIdx++) {
+            if (bitMatrix[rowIdx][colIdx]) {
+                squashColumn(colIdx);
+            }
+        }
+        // Clear the waitBit 
+        inst->renamedDestIdx(0)->setWaitBit(false);
+    }
+
     instList[rowIdx] = nullptr;
     std::fill(bitMatrix[rowIdx].begin(), bitMatrix[rowIdx].end(), false);
 }
@@ -301,9 +293,25 @@ WIB::insertInst(const DynInstPtr &inst)
 void
 WIB::tagDependentInst(const DynInstPtr &inst, const size_t colIdx) {
     assert(inst);
+    // numLoads < numEntries
     for (int i = 0; i < numEntries; i++) {
+        if (i >= bitMatrix.size()) {
+            // std::cout << "Error: Row index i=" << i << " out of bounds for bitMatrix." << std::endl;
+            break;
+        }
+        if (colIdx >= bitMatrix[i].size()) {
+            // std::cout << "Error: Column index colIdx=" << colIdx 
+            //           << " out of bounds for bitMatrix[" << i << "]." << std::endl;
+            break;
+        }
+        if (!instList[i]) {
+            // std::cout << "Warning: instList[" << i << "] is null." << std::endl;
+            continue;
+        }
         if (instList[i]->seqNum == inst->seqNum) {
-            bitMatrix[i][colIdx] = true;
+            // std::cout << "Accessing bitMatrix[" << i << "][" << colIdx << "]" << std::endl;
+            bitMatrix[i][colIdx] = true;  // Suspected line
+            // std::cout << "Value set successfully at bitMatrix[" << i << "][" << colIdx << "]" << std::endl;
             break;
         }
     }
@@ -320,11 +328,11 @@ WIB::doSquash(InstSeqNum squash_num)
 {
     // let ROB handle the instruction state on squashes, just need
     // to handle local head/tail index here, and update bitMatrix
-    
+
     size_t currentIdx = tailInst;
     while (instList[currentIdx]->seqNum < squashedSeqNum) {
-      squashRow(currentIdx);
-      currentIdx = (currentIdx - 1) % numEntries;
+        squashRow(currentIdx);
+        currentIdx = (currentIdx - 1) % numEntries;
     }
     doneSquashing = true;
 }
@@ -334,7 +342,7 @@ WIB::squash(InstSeqNum squash_num)
 {
     doneSquashing = false;
     if (numInstsInWIB != 0) {
-      doSquash(squash_num);
+        doSquash(squash_num);
     }
 }
 

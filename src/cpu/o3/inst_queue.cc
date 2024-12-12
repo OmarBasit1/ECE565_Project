@@ -854,6 +854,7 @@ InstructionQueue::scheduleReadyInsts()
         // if instruction is pretend ready, move it to the WIB and dont issue to FU
         if (pretendReady) {
             wib->tagDependentInst(issuing_inst, colIdx);
+            ++order_it; // <---------------
         }
 
         // If we have an instruction that doesn't require a FU, or a
@@ -1003,6 +1004,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     }
 
     completed_inst->lastWakeDependents = curTick();
+    wib->removeColumn(0);
 
     DPRINTF(IQ, "Waking dependents of completed instruction.\n");
 
@@ -1220,6 +1222,23 @@ InstructionQueue::squash(ThreadID tid)
 void
 InstructionQueue::doSquash(ThreadID tid)
 {
+    constexpr size_t instListSize = sizeof(instList) / sizeof(instList[0]);
+    constexpr size_t squashedSeqNumSize = sizeof(squashedSeqNum) / sizeof(squashedSeqNum[0]);
+
+    std::cout << "tid: " << tid << std::endl;
+    std::cout << "instListSize " << instListSize << std::endl;
+    std::cout << "squashedSeqNumSize " << squashedSeqNumSize << std::endl;
+    std::cout << "instList[tid].empty() " << instList[tid].empty() << std::endl;
+
+    if (tid >= instListSize || tid >= squashedSeqNumSize) {
+        panic("Invalid ThreadID: %i", tid);
+    }
+
+    if (instList[tid].empty()) {
+        std::cout << "Instruction list is empty. No squash needed. <--------------------\n" << std::endl;
+        return;
+    }
+
     // Start at the tail.
     ListIt squash_it = instList[tid].end();
     --squash_it;
