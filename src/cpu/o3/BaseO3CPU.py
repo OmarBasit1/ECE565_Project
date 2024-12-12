@@ -189,7 +189,7 @@ class BaseO3CPU(BaseCPU):
     numPhysCCRegs = Param.Unsigned(0, "Number of physical cc registers")
     numIQEntries = Param.Unsigned(97, "Number of instruction queue entries")
     numROBEntries = Param.Unsigned(224, "Number of reorder buffer entries")
-    numWIBEntries = Param.Unsigned(2048, "Number of waiting instruction buffer entries")
+    numWIBEntries = Param.Unsigned(512, "Number of waiting instruction buffer entries")
 
     smtNumFetchingThreads = Param.Unsigned(1, "SMT Number of Fetching Threads")
     smtFetchPolicy = Param.SMTFetchPolicy("RoundRobin", "SMT Fetch policy")
