@@ -1004,7 +1004,6 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     }
 
     completed_inst->lastWakeDependents = curTick();
-    wib->removeColumn(0);
 
     DPRINTF(IQ, "Waking dependents of completed instruction.\n");
 
@@ -1027,6 +1026,10 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
                completed_inst->isWriteBarrier()) {
         // Completes a non mem ref barrier
         memDepUnit[tid].completeInst(completed_inst);
+    }
+
+    if (completed_inst->isLoad() && completed_inst->renamedDestIdx(0)->isWaitBit()) {
+        wib->removeColumn(completed_inst->renamedDestIdx(0)->getWaitColumn());
     }
 
     for (int dest_reg_idx = 0;
