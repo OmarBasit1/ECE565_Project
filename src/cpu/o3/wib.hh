@@ -172,6 +172,8 @@ class WIB
 
     void wibEmpty();
 
+    int written_since_squash = 0;
+
   private:
     /** Queue of instructions coming from WIB to be dispatched. */
     std::queue<DynInstPtr> wibBuffer;

@@ -100,12 +100,13 @@ WIB::wibEmpty()
         }
     }
     // if (load_count == numLoads) {std::cout << "empty loads" << std::endl;}
-    if (load_count == numLoads & (inst_on_inst > 0 | inst_on_loads > 0)) {
-        std::cout << numInstsInWIB << "instructions in WIB" << std::endl;
-        std::cout << "but no loads" << std::endl;
-        std::cout << "dispatch buffer: " << wibBuffer.size() << std::endl;
-    }
-    if (inst_count == numLoads) {std::cout << "NO INSTRUCTIONS IN WIB" << std::endl;}
+    // if (load_count == numLoads & (inst_on_inst > 0 | inst_on_loads > 0)) {
+    //     std::cout << numInstsInWIB << "instructions in WIB" << std::endl;
+    //     std::cout << "but no loads" << std::endl;
+    //     std::cout << "dispatch buffer: " << wibBuffer.size() << std::endl;
+    //     std::cout << "writes since squash: " << written_since_squash << std::endl;
+    // }
+    // if (inst_count == numLoads) {std::cout << "NO INSTRUCTIONS IN WIB" << std::endl;}
     // if (same_ptr & !empty) {std::cout << "ERROR: FIX POINTERS" << std::endl;}
     // if (empty) {std::cout << "WIB IS EMTPY" << std::endl;}
 }
@@ -114,7 +115,7 @@ void
 WIB::wibInsert(const DynInstPtr &inst)
 {
     wibBuffer.push(inst);
-    std::cout << "moving instruction that depends on col " << inst->renamedDestIdx(0)->getWaitColumn() << std::endl;
+    // std::cout << "moving instruction that depends on col " << inst->renamedDestIdx(0)->getWaitColumn() << std::endl;
 }
 
 size_t
@@ -129,14 +130,14 @@ WIB::addColumn(const DynInstPtr &inst)
         if (!loadList[i]) {
             found_column = true;
             colIdx = i;
-            std::cout << "adding load to col " << colIdx << std::endl;
+            // std::cout << "adding load to col " << colIdx << std::endl;
             loadList[colIdx] = inst;
             inst->renamedDestIdx(0)->setWaitColumn(colIdx);
             break;
         }
     }
 
-    if (!found_column) {std::cout << "NO SPACE IN WIB FOR LOAD" << std::endl; }
+    // if (!found_column) {std::cout << "NO SPACE IN WIB FOR LOAD" << std::endl; }
 
     // reset column
     for (auto& row: bitMatrix) {
@@ -150,12 +151,11 @@ WIB::addColumn(const DynInstPtr &inst)
 void
 WIB::removeColumn(const size_t colIdx)
 {
-    std::cout << "removing column " << colIdx << std::endl;
+   //  std::cout << "removing column " << colIdx << std::endl;
     // process the columns rows to send dependendent insts back to issue queue
     loadList[colIdx] = nullptr;
     bool any_dispatched = false;
     for (auto& row : bitMatrix) {
-        std::cout << (row[colIdx]);
         if (row[colIdx]) {
             any_dispatched = true;
 
@@ -171,13 +171,12 @@ WIB::removeColumn(const size_t colIdx)
             wibInsert(inst);
         }
     }
-    std::cout << std::endl;
 }
 
 void
 WIB::squashColumn(const size_t colIdx)
 {
-    std::cout << "squashing column " << colIdx << std::endl;
+    // std::cout << "squashing column " << colIdx << std::endl;
     // colIdx -> entryIdx
     loadList[colIdx] = nullptr;
     for (auto& row : bitMatrix) {
@@ -188,23 +187,23 @@ WIB::squashColumn(const size_t colIdx)
 void
 WIB::squashRow(const size_t rowIdx)
 {
-    std::cout << "squshing row " << rowIdx << std::endl;
+    // std::cout << "squshing row " << rowIdx << std::endl;
     // rowIdx -> loadIdx
     DynInstPtr inst = instList[rowIdx];
 
     // load instruction with a waitBit dest reg getting squashed
-    if (inst->isLoad() && inst->renamedDestIdx(0)->isWaitBit()) {
+    // if (inst->isLoad() && inst->renamedDestIdx(0)->isWaitBit()) {
         // Update our WIB to set only the loadList to nullptr at
         // the index of the load getting squashed
-        squashColumn(inst->renamedDestIdx(0)->getWaitColumn());
+        // squashColumn(inst->renamedDestIdx(0)->getWaitColumn());
         // for (int colIdx = 0; colIdx < numEntries; colIdx++) {
         //     if (bitMatrix[rowIdx][colIdx]) {
         //         squashColumn(colIdx);
         //     }
         // }
         // Clear the waitBit 
-        inst->renamedDestIdx(0)->setWaitBit(false);
-    }
+        // inst->renamedDestIdx(0)->setWaitBit(false);
+    // }
 
     instList[rowIdx] = nullptr;
     std::fill(bitMatrix[rowIdx].begin(), bitMatrix[rowIdx].end(), false);
@@ -226,6 +225,9 @@ WIB::tagDependentInst(const DynInstPtr &inst, const size_t colIdx) {
     // std::cout << "tagging dependent insts" << std::endl;
     assert(inst);
     // numLoads < numEntries
+    if (colIdx == 0){
+        written_since_squash++;
+    }
     bool found = false;
     for (int i = 0; i < numEntries; i++) {
         if (i >= bitMatrix.size()) {
@@ -242,6 +244,7 @@ WIB::tagDependentInst(const DynInstPtr &inst, const size_t colIdx) {
             continue;
         }
         if (instList[i]->seqNum == inst->seqNum) {
+            // std::cout << inst->seqNum << std::endl;
             found = true;
             // std::cout << "writing 1 to col " << colIdx << " for current instruction" << std::endl;
             // std::cout << "Accessing bitMatrix[" << i << "][" << colIdx << "]" << std::endl;
@@ -250,7 +253,16 @@ WIB::tagDependentInst(const DynInstPtr &inst, const size_t colIdx) {
             break;
         }
     }
-    if (!found) { std::cout << "INSTRUCTION NOT IN WIB" << std::endl;}
+    // std::cout << "Column " << colIdx << ": ";
+    //   for (size_t i = 0; i < bitMatrix.size(); ++i) {
+    //       if (colIdx < bitMatrix[i].size()) {
+    //           std::cout << bitMatrix[i][colIdx];
+    //       } else {
+    //           std::cout << "OutOfBounds ";
+    //       }
+    //   }
+    //   std::cout << std::endl;   
+    // if (!found) { std::cout << "INSTRUCTION NOT IN WIB" << std::endl;}
 }
 
 unsigned
@@ -280,6 +292,7 @@ WIB::doSquash(InstSeqNum squash_num)
 void
 WIB::squash(InstSeqNum squash_num)
 {
+    written_since_squash = 0;
     doneSquashing = false;
     if (numInstsInWIB != 0) {
         doSquash(squash_num);

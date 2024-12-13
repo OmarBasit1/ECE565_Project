@@ -1030,7 +1030,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     }
 
     if (completed_inst->isLoad() && completed_inst->renamedDestIdx(0)->isWaitBit()) {
-        std::cout << "COMMITTING LOAD MISS" << std::endl;
+        // std::cout << "COMMITTING LOAD MISS" << std::endl;
         wib->removeColumn(completed_inst->renamedDestIdx(0)->getWaitColumn());
     }
 
@@ -1135,7 +1135,7 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
       resched_inst->renamedDestIdx(0)->setWaitBit(true);
       size_t columnIdx = wib->addColumn(resched_inst);
       resched_inst->renamedDestIdx(0)->setWaitColumn(columnIdx);
-      std::cout << "writing columnIdx to " << columnIdx << std::endl;
+      // std::cout << "writing columnIdx to " << columnIdx << std::endl;
     }
 
     resched_inst->clearCanIssue();
@@ -1241,7 +1241,7 @@ InstructionQueue::doSquash(ThreadID tid)
     }
 
     if (instList[tid].empty()) {
-        std::cout << "Instruction list is empty. No squash needed. <--------------------\n" << std::endl;
+        // std::cout << "Instruction list is empty. No squash needed. <--------------------\n" << std::endl;
         return;
     }
 

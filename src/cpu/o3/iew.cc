@@ -1132,11 +1132,11 @@ IEW::executeInsts()
         
         // if (inst->renamedDestIdx(0)->isWaitBit()) {
         //     std::cout << "executing a waitBit instruction" << std::endl;
-        wib->wibEmpty();
-        if (inst->isLoad() & inst->renamedDestIdx(0)->isWaitBit()) 
-        { 
-            std::cout << "executing load at " << inst->renamedDestIdx(0)->getWaitColumn() << std::endl; 
-        } 
+        // wib->wibEmpty();
+        // if (inst->isLoad() & inst->renamedDestIdx(0)->isWaitBit()) 
+        // { 
+            // std::cout << "executing load at " << inst->renamedDestIdx(0)->getWaitColumn() << std::endl; 
+        // } 
         // }
 
         DPRINTF(IEW, "Execute: Processing PC %s, [tid:%i] [sn:%llu].\n",
