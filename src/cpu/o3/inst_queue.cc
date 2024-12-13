@@ -849,12 +849,13 @@ InstructionQueue::scheduleReadyInsts()
             if (issuing_inst->renamedSrcIdx(src_reg_idx)->isWaitBit()) {
                 pretendReady = true;
                 colIdx = issuing_inst->renamedSrcIdx(src_reg_idx)->getWaitColumn();
+                wib->tagDependentInst(issuing_inst, colIdx);
             }
         }
         // if instruction is pretend ready, move it to the WIB and dont issue to FU
         if (pretendReady) {
             // std::cout << "pretend ready instruction that reads col " << colIdx << std::endl;
-            wib->tagDependentInst(issuing_inst, colIdx);
+            // wib->tagDependentInst(issuing_inst, colIdx);
             ++order_it; // <---------------
         }
 
@@ -1402,7 +1403,7 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
     int8_t total_src_regs = new_inst->numSrcRegs();
     int8_t total_dest_regs = new_inst->numDestRegs();
     bool return_val = false;
-    bool first_wait = false;
+    // bool first_wait = false;
 
     for (int src_reg_idx = 0;
          src_reg_idx < total_src_regs;
@@ -1425,12 +1426,13 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
                         src_reg->className());
 
                 // propogate the waitBit to dependent physical registers
-                if (src_reg->isWaitBit() & !first_wait) {
+                // if (src_reg->isWaitBit() & !first_wait) {
+                if (src_reg->isWaitBit()) {
                   // set the waiting source register to "pretend ready"
                   // and only when issueing the isntruction check if needs
                   // to go to WIB or normal execute to allow it to leave
                   // the issue queue
-                    first_wait = true;
+                    // first_wait = true;
                     new_inst->markSrcRegReady(src_reg_idx);
                     new_inst->renamedDestIdx(0)->setWaitBit(true);
                     return_val = false;

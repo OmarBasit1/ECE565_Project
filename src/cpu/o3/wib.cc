@@ -155,23 +155,22 @@ WIB::removeColumn(const size_t colIdx)
     // process the columns rows to send dependendent insts back to issue queue
     loadList[colIdx] = nullptr;
     bool any_dispatched = false;
-    for (auto& row : bitMatrix) {
-        if (row[colIdx]) {
+    for (size_t rowIdx = 0; rowIdx < bitMatrix.size(); ++rowIdx) {
+        if (bitMatrix[rowIdx][colIdx]) {
             any_dispatched = true;
 
-            // send instruction at current row to be dispatched into IQ
-            // Assuming all inst sent here are load insts
-            DynInstPtr inst = instList[colIdx];
-
             // Make sure there's a valid instruction there.
-            assert(inst);
+            assert(instList[rowIdx]);
 
             // clear the waitBit of this instruction
-            inst->renamedDestIdx(0)->setWaitBit(false);
-            wibInsert(inst);
+            instList[rowIdx]->renamedDestIdx(0)->setWaitBit(false);
+            wibInsert(instList[rowIdx]);
+
+            // clear other columns for the current instructionn and send it back to IQ
+            // if it still has dependence on another load at that point, it will come back into WIB
+            std::fill(bitMatrix[rowIdx].begin(), bitMatrix[rowIdx].end(), false);
         }
-    }
-}
+    }}
 
 void
 WIB::squashColumn(const size_t colIdx)
