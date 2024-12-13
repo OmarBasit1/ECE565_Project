@@ -737,6 +737,8 @@ Commit::propagateInterrupt()
 void
 Commit::commit()
 {
+
+    // std::cout << "insts in ROB: " << rob->numInstsInROB << std::endl;
     if (FullSystem) {
         // Check if we have a interrupt and get read to handle it
         if (cpu->checkInterrupts(0))

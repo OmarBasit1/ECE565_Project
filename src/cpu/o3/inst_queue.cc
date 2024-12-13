@@ -853,6 +853,7 @@ InstructionQueue::scheduleReadyInsts()
         }
         // if instruction is pretend ready, move it to the WIB and dont issue to FU
         if (pretendReady) {
+            // std::cout << "pretend ready instruction that reads col " << colIdx << std::endl;
             wib->tagDependentInst(issuing_inst, colIdx);
             ++order_it; // <---------------
         }
@@ -1029,6 +1030,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     }
 
     if (completed_inst->isLoad() && completed_inst->renamedDestIdx(0)->isWaitBit()) {
+        std::cout << "COMMITTING LOAD MISS" << std::endl;
         wib->removeColumn(completed_inst->renamedDestIdx(0)->getWaitColumn());
     }
 
@@ -1133,6 +1135,7 @@ InstructionQueue::rescheduleMemInst(const DynInstPtr &resched_inst)
       resched_inst->renamedDestIdx(0)->setWaitBit(true);
       size_t columnIdx = wib->addColumn(resched_inst);
       resched_inst->renamedDestIdx(0)->setWaitColumn(columnIdx);
+      std::cout << "writing columnIdx to " << columnIdx << std::endl;
     }
 
     resched_inst->clearCanIssue();
@@ -1228,10 +1231,10 @@ InstructionQueue::doSquash(ThreadID tid)
     constexpr size_t instListSize = sizeof(instList) / sizeof(instList[0]);
     constexpr size_t squashedSeqNumSize = sizeof(squashedSeqNum) / sizeof(squashedSeqNum[0]);
 
-    std::cout << "tid: " << tid << std::endl;
-    std::cout << "instListSize " << instListSize << std::endl;
-    std::cout << "squashedSeqNumSize " << squashedSeqNumSize << std::endl;
-    std::cout << "instList[tid].empty() " << instList[tid].empty() << std::endl;
+    // std::cout << "tid: " << tid << std::endl;
+    // std::cout << "instListSize " << instListSize << std::endl;
+    // std::cout << "squashedSeqNumSize " << squashedSeqNumSize << std::endl;
+    // std::cout << "instList[tid].empty() " << instList[tid].empty() << std::endl;
 
     if (tid >= instListSize || tid >= squashedSeqNumSize) {
         panic("Invalid ThreadID: %i", tid);
@@ -1399,6 +1402,7 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
     int8_t total_src_regs = new_inst->numSrcRegs();
     int8_t total_dest_regs = new_inst->numDestRegs();
     bool return_val = false;
+    bool first_wait = false;
 
     for (int src_reg_idx = 0;
          src_reg_idx < total_src_regs;
@@ -1421,19 +1425,14 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
                         src_reg->className());
 
                 // propogate the waitBit to dependent physical registers
-                if (src_reg->isWaitBit()) {
+                if (src_reg->isWaitBit() & !first_wait) {
                   // set the waiting source register to "pretend ready"
                   // and only when issueing the isntruction check if needs
                   // to go to WIB or normal execute to allow it to leave
                   // the issue queue
-                  new_inst->markSrcRegReady(src_reg_idx);
-                  for (int dest_reg_idx = 0;
-                       dest_reg_idx < total_dest_regs;
-                       dest_reg_idx++)
-                  {
-                    // std::cout << "DEP ISNTR" << std::endl;
-                    new_inst->renamedDestIdx(dest_reg_idx)->setWaitBit(true);
-                  }
+                    first_wait = true;
+                    new_inst->markSrcRegReady(src_reg_idx);
+                    new_inst->renamedDestIdx(0)->setWaitBit(true);
                     return_val = false;
                 } else {
                   dependGraph.insert(src_reg->flatIndex(), new_inst);

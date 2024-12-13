@@ -1129,6 +1129,15 @@ IEW::executeInsts()
         DPRINTF(IEW, "Execute: Executing instructions from IQ.\n");
 
         DynInstPtr inst = instQueue.getInstToExecute();
+        
+        // if (inst->renamedDestIdx(0)->isWaitBit()) {
+        //     std::cout << "executing a waitBit instruction" << std::endl;
+        wib->wibEmpty();
+        if (inst->isLoad() & inst->renamedDestIdx(0)->isWaitBit()) 
+        { 
+            std::cout << "executing load at " << inst->renamedDestIdx(0)->getWaitColumn() << std::endl; 
+        } 
+        // }
 
         DPRINTF(IEW, "Execute: Processing PC %s, [tid:%i] [sn:%llu].\n",
                 inst->pcState(), inst->threadNumber,inst->seqNum);
@@ -1369,14 +1378,14 @@ IEW::writebackInsts()
         // instruction.
         ppToCommit->notify(inst);
 
-        if (inst->isLoad()) 
-        {
-          if (inst->renamedDestIdx(0)->isWaitBit())
-          {
-            // std::cout << "WAIT LOAD RESOLVED" << std::endl;
-          }
-          inst->renamedDestIdx(0)->setWaitBit(false);
-        }
+        // if (inst->isLoad()) 
+        // {
+        //   if (inst->renamedDestIdx(0)->isWaitBit())
+        //   {
+        //     // std::cout << "WAIT LOAD RESOLVED" << std::endl;
+        //   }
+        //   inst->renamedDestIdx(0)->setWaitBit(false);
+        // }
 
         // Some instructions will be sent to commit without having
         // executed because they need commit to handle them.

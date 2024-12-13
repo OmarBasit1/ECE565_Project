@@ -170,6 +170,8 @@ class WIB
     // tag pretend ready instructions in WIB instead of issueing
     void tagDependentInst(const DynInstPtr &inst, const size_t colIdx);
 
+    void wibEmpty();
+
   private:
     /** Queue of instructions coming from WIB to be dispatched. */
     std::queue<DynInstPtr> wibBuffer;
